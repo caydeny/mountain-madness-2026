@@ -1,0 +1,65 @@
+.navbar {
+  height: 70px;
+  background-color: #006AC3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  color: white;
+  font-family: 'Roboto', sans-serif;
+}
+
+.navbar-left-group {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-img {
+  height: 66px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 60px;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.navbar-links a:hover {
+  opacity: 0.8;
+}
+
+.connect-btn {
+  background-color: #FEDF01;
+  border: none;
+  padding: 10px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.connect-btn:hover {
+  opacity: 0.9;
+}
