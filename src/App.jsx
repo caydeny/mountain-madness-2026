@@ -12,6 +12,7 @@ function App() {
   const [userName, setUserName] = useState('Me')
   const [userElo, setUserElo] = useState(0)
   const [userRank, setUserRank] = useState('iron')
+  const [userGoogleId, setUserGoogleId] = useState(null)
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -34,6 +35,7 @@ function App() {
 
         setUserName(firstName)
         setUserEmail(email)
+        setUserGoogleId(sub)
 
         // Sync with Supabase profiles table
         const { data, error } = await supabase
@@ -114,6 +116,7 @@ function App() {
                 loading={loading}
                 setLoading={setLoading}
                 userName={userName}
+                userGoogleId={userGoogleId}
               />
             }
           />
