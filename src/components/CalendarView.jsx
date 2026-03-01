@@ -87,6 +87,11 @@ export default function CalendarView({
                 <span className="rbc-event-price-badge">
                     ${event.price != null ? Number(event.price).toLocaleString() : '0'}
                 </span>
+                {event.reasoning && (
+                    <div className="rbc-event-tooltip">
+                        {event.reasoning}
+                    </div>
+                )}
             </div>
         )
 
