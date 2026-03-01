@@ -16,7 +16,7 @@ ${eventsJSON}
 TASK:
 For every event, predict a realistic dollar budget the user should allocate based on their maximum spending capacity.
 STRICT CONSTRAINTS:
-1. The SUM of all predicted budgets MUST NOT exceed $${income-savingsGoal}.
+1. The SUM of all predicted budgets MUST NOT exceed $${income - savingsGoal}.
 2. If naive realistic estimates exceed the limit, proportionally scale them down.
 3. Events like work meetings, study time, gym, home activities are low-cost unless context strongly implies spending.
 4. Social, dining, entertainment, travel, or shopping events should cost more.
@@ -27,7 +27,7 @@ STRICT CONSTRAINTS:
 
 ALLOCATION LOGIC:
 - First estimate a realistic cost for each event.
-- Then adjust proportionally so total ≤ $${maxSpendable}.
+- Then adjust proportionally so total ≤ $${income - savingsGoal}.
 - Prioritize savings stability over event luxury.
 - Avoid extreme allocations unless clearly justified.
 
