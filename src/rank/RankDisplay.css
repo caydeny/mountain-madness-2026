@@ -83,12 +83,10 @@
 /* Rank Colors */
 .rank-iron {
   color: grey;
-  text-shadow: 0 0 10px darkgrey;
 }
 
 .rank-bronze {
   color: #8C5220;
-  text-shadow: 0 0 10px lightsalmon;
 }
 
 .rank-silver {
