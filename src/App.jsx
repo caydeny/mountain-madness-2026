@@ -5,6 +5,7 @@ import './App.css'
 import Navbar from './components/Navbar'
 import CalendarPage from './pages/CalendarPage'
 import LeaderboardPage from './pages/LeaderboardPage'
+import ChatPage from './pages/ChatPage'
 import RankUpModal from './components/RankUpModal'
 import { getRankFromElo, RANKS } from './utils/rankUtils'
 
@@ -201,6 +202,16 @@ function App() {
                 userElo={userElo}
                 setUserElo={updateElo}
                 userRank={userRank}
+              />
+            }
+          />
+          <Route
+            path="/advisor"
+            element={
+              <ChatPage
+                userGoogleId={userGoogleId}
+                userGoal={userGoal}
+                userName={userName}
               />
             }
           />
