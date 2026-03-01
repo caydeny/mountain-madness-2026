@@ -19,13 +19,13 @@ export default function RankDisplay({ elo, setElo }) {
         <div className="button-group">
           <button
             className="action-btn decrease-btn"
-            onClick={() => setElo(prev => Math.max(0, prev - 50))}
+            onClick={() => setElo(Math.max(0, elo - 50))}
           >
             Decrease Elo
           </button>
           <button
             className="action-btn increase-btn"
-            onClick={() => setElo(prev => prev + 50)}
+            onClick={() => setElo(elo + 50)}
           >
             Increase Elo
           </button>

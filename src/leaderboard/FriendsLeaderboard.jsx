@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { supabase } from '../utils/supabase';
 import { getRankFromElo } from '../utils/rankUtils';
 import './Leaderboard.css';
 
@@ -9,24 +10,58 @@ const MOCK_FRIENDS = [
     { id: 'f4', name: 'Cayden', elo: 950 },
 ];
 
-export default function FriendsLeaderboard({ userElo, userName = 'Me' }) {
-    const leaderboardData = useMemo(() => {
-        // Add current user to the list
-        const combined = [
-            ...MOCK_FRIENDS,
-            { id: 'me', name: userName, elo: userElo, isCurrentUser: true }
-        ];
+export default function FriendsLeaderboard({ userElo, userName = 'Me', leaderboardId }) {
+    const [members, setMembers] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-        // Sort descending by Elo
-        return combined.sort((a, b) => b.elo - a.elo);
-    }, [userElo, userName]);
+    useEffect(() => {
+        if (!leaderboardId || leaderboardId === 'friends') {
+            setMembers(MOCK_FRIENDS);
+            return;
+        }
+
+        const fetchMembers = async () => {
+            setLoading(true);
+            try {
+                // Fetch all profiles belonging to this leaderboard
+                const { data, error } = await supabase
+                    .from('memberships')
+                    .select('profiles (email, name, elo)')
+                    .eq('leaderboard_id', leaderboardId);
+
+                if (!error && data) {
+                    setMembers(data.map(m => m.profiles));
+                }
+            } catch (err) {
+                console.error('Error fetching group members:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchMembers();
+    }, [leaderboardId]);
+
+    const leaderboardData = useMemo(() => {
+        // Since the current user is also in the DB, they might be in 'members'
+        // But for consistency we ensure our local state is reflected
+        return members.map(user => ({
+            ...user,
+            id: user.email || user.id,
+            isCurrentUser: user.name === userName
+        })).sort((a, b) => b.elo - a.elo);
+    }, [members, userName, userElo]);
 
     return (
         <div className="leaderboard-panel friends-leaderboard">
-            <h3 className="panel-title">Friends Leaderboard</h3>
+            <h3 className="panel-title">
+                {leaderboardId === 'friends' ? 'Friends (Mock)' : 'Group'} Rankings
+            </h3>
 
             <div className="leaderboard-list">
-                {leaderboardData.map((user, index) => {
+                {loading ? (
+                    <div className="loading-item">Fetching members...</div>
+                ) : leaderboardData.map((user, index) => {
                     const rankName = getRankFromElo(user.elo);
                     return (
                         <div

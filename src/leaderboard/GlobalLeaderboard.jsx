@@ -2,39 +2,42 @@ import { useMemo, useState, useEffect } from 'react';
 import { getRankFromElo } from '../utils/rankUtils';
 import './Leaderboard.css';
 
-// Pre-generate some random global users so they don't change on every render
-const generateRandomGlobalUsers = () => {
-    const users = [
-        { id: 'g1', name: 'Faker' },
-        { id: 'g2', name: 'Chovy' },
-        { id: 'g3', name: 'ShowMaker' },
-        { id: 'g4', name: 'Rookie' },
-        { id: 'g5', name: 'Doinb' },
-    ];
-
-    return users.map(u => ({
-        ...u,
-        elo: Math.floor(Math.random() * 1000) // Random Elo from 0 to 999
-    }));
-};
+import { supabase } from '../utils/supabase';
 
 export default function GlobalLeaderboard({ userElo, userName = 'Me' }) {
     const [globalUsers, setGlobalUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setGlobalUsers(generateRandomGlobalUsers());
+        const fetchGlobalRankings = async () => {
+            setLoading(false);
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('email, name, elo')
+                .order('elo', { ascending: false })
+                .limit(50);
+
+            if (!error && data) {
+                // Filter out the current user if they are in the list to avoid duplication
+                // since we add them manually with the latest local elo
+                // (Though in a real app, you'd just use the DB record)
+                setGlobalUsers(data);
+            }
+            setLoading(false);
+        };
+
+        fetchGlobalRankings();
     }, []);
 
     const leaderboardData = useMemo(() => {
-        // Add current user to the list
-        const combined = [
-            ...globalUsers,
-            { id: 'me', name: userName, elo: userElo, isCurrentUser: true }
-        ];
-
-        // Sort descending by Elo
-        return combined.sort((a, b) => b.elo - a.elo);
-    }, [userElo, globalUsers, userName]);
+        // Since we are fetching everything, we just use the data
+        // But we mark which one is "Me" based on the name/email if we had it
+        return globalUsers.map(user => ({
+            ...user,
+            id: user.email,
+            isCurrentUser: user.name === userName // Simple check for now
+        }));
+    }, [globalUsers, userName]);
 
     return (
         <div className="leaderboard-panel global-leaderboard">
