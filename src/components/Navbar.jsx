@@ -25,7 +25,6 @@ export default function Navbar({ onLoginSuccess, isLoggedIn, userName }) {
 
         <div className="navbar-links">
           <Link to="/">Home</Link>
-          <a href="#">Goal Setting</a>
           <Link to="/leaderboard">Leaderboard</Link>
         </div>
       </div>
