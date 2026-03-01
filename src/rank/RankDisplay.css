@@ -3,18 +3,18 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #121212;
-  color: #fff;
+  background-color: #ffffff;
+  color: #000000;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .rank-board {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(10px);
   padding: 2.5rem;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   width: 320px;
   text-align: center;
 }
@@ -28,7 +28,7 @@
 }
 
 .stat-label {
-  color: #a0a0a0;
+  color: #555555;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px;

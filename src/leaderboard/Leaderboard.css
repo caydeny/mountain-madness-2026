@@ -10,9 +10,11 @@
     font-size: 2rem;
     font-weight: 700;
     text-align: center;
+    margin-top: 0;
     margin-bottom: 1rem;
-    background: linear-gradient(to right, #fff, #a0a0a0);
+    background: linear-gradient(to right, #000000, #555555);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -23,21 +25,21 @@
 }
 
 .leaderboard-panel {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
     backdrop-filter: blur(10px);
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .panel-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #e0e0e0;
+    color: #333333;
     margin-bottom: 1.5rem;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     padding-bottom: 0.75rem;
 }
 
@@ -52,13 +54,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(0, 0, 0, 0.03);
     border-radius: 8px;
     transition: transform 0.2s, background 0.2s;
 }
 
 .leaderboard-item:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.08);
     transform: translateX(4px);
 }
 
@@ -101,7 +103,7 @@
 .item-elo {
     font-family: monospace;
     font-size: 1.1rem;
-    color: #ccc;
+    color: #555555;
 }
 
 .item-rank {

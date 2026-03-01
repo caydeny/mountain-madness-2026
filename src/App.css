@@ -4,21 +4,42 @@
     margin: 0 auto;
 }
 
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #ffffff;
+    color: #000000;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 2rem 0 0.5rem 0;
+    background: linear-gradient(135deg, #a855f7, #6366f1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
 .app-container {
     display: flex;
     width: 100%;
-    height: 100vh;
-    background-color: #121212;
-    color: #fff;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    flex: 1;
 }
 
 .left-panel {
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    align-items: flex-start;
+    padding-top: 0.5rem;
+    /* Offsets the rank-board padding of 2.5rem to match right-panel's 3rem */
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .right-panel {
