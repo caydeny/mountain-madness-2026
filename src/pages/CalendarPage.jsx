@@ -5,6 +5,7 @@ import { predictBudgets } from '../services/budgetService'
 import { supabase } from '../utils/supabase'
 
 // ─── Hardcoded values (swap with user input later) ──────────────────────────
+const currentDate = new Date().toISOString().split('T')[0]; // e.g. "2026-02-28"
 const MONTHLY_INCOME = 5000;
 const SAVINGS_GOAL = 1500;
 
@@ -95,7 +96,7 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
             const promptEvents = unpredictedEvents.map((e) => e._raw.toPromptJSON());
 
             console.log('Sending events to Gemini for budget prediction…');
-            const newBudgets = await predictBudgets(promptEvents, MONTHLY_INCOME, SAVINGS_GOAL);
+            const newBudgets = await predictBudgets(promptEvents, currentDate, MONTHLY_INCOME, SAVINGS_GOAL);
             console.log('Gemini predicted budgets:', newBudgets);
 
             // Save to Supabase
