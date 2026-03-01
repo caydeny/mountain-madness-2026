@@ -28,10 +28,8 @@ STRICT CONSTRAINTS:
 10. Do not exceed the spending limit under any circumstances.
 
 ALLOCATION LOGIC:
-- First estimate a realistic cost for each event.
-- Then adjust proportionally so total ≤ $${maxSpendable}.
-- Prioritize savings stability over event luxury.
-- Avoid extreme allocations unless clearly justified.
+- Estimate a realistic cost for each event depending on the user's max spendable amount (i.e. "rich" people with a higher budget can spend more per event, while "poor" people should be more conservative).
+- Write a reasoning for the cost of each event based on the event and possible spendings (i.e. for a "Birthday Dinner", the reasoning might be "This is a social event that typically involves dining out and gifts").
 
 Return ONLY a valid JSON array, no markdown, no explanation. Each element must have:
 { "eventId": "...", "title": "...", "predictedBudget": <number>, "reasoning": "..." }`;
