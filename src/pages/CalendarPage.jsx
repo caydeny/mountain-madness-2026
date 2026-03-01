@@ -3,13 +3,14 @@ import CalendarView from '../components/CalendarView'
 import { parseRawEvents } from '../services/eventModel'
 import { predictBudgets } from '../services/budgetService'
 import { supabase } from '../utils/supabase'
-import { format, addDays } from 'date-fns'
+import { format, addDays, endOfMonth } from 'date-fns'
 
 // ─── Hardcoded values (swap with user input later) ──────────────────────────
 const currentDate = new Date().toISOString().split('T')[0]; // e.g. "2026-02-28"
 const MONTHLY_INCOME = 5000;
-const SAVINGS_GOAL = 1500;
-const FAKE_SPENDING = [35, 0, 20, 120, 35, 200, 0, 40];
+const MANDATORY_COSTS = 2000; // rent, bills, etc. that are not tied to specific events
+const SAVINGS_GOAL = 30;
+const FAKE_SPENDING = [35, 0, 20, 120, 18, 100, 0, 40];
 
 export default function CalendarPage({
     accessToken, setAccessToken, events, setEvents, loading, setLoading,
@@ -153,12 +154,15 @@ export default function CalendarPage({
             }
 
             const now = new Date();
-            const promptEvents = unpredictedEvents
-                .filter((e) => new Date(e.start) >= now) // Only include upcoming events
-                .map((e) => e._raw.toPromptJSON());
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+            const thisMonthEvents = unpredictedEvents.filter((e) => {
+                const start = new Date(e.start);
+                return start >= now && start <= endOfMonth;
+            });
+            const promptEvents = thisMonthEvents.map((e) => e._raw.toPromptJSON());
 
             console.log('Sending events to Gemini for budget prediction…');
-            const newBudgets = await predictBudgets(promptEvents, currentDate, MONTHLY_INCOME, SAVINGS_GOAL);
+            const newBudgets = await predictBudgets(promptEvents, currentDate, (MONTHLY_INCOME - MANDATORY_COSTS) * (SAVINGS_GOAL / 100));
             console.log('Gemini predicted budgets:', newBudgets);
 
             // Save to Supabase
@@ -168,7 +172,7 @@ export default function CalendarPage({
                 event_id: b.eventId,
                 title: b.title,
                 predicted_budget: b.predictedBudget,
-                reasoning: b.reasoning
+                reasoning: b.reasoning,
             }));
 
             const { error: insertError } = await supabase.from('events').insert(inserts);
@@ -497,6 +501,9 @@ export default function CalendarPage({
                     setUserGoal={setUserGoal}
                     userGoogleId={userGoogleId}
                     streakMap={streakMap}
+                    monthlyIncome={MONTHLY_INCOME}
+                    monthlyMandatorySpending={MANDATORY_COSTS}
+                    monthlySavingGoal={(MONTHLY_INCOME - MANDATORY_COSTS) * (SAVINGS_GOAL / 100)}
                 />
             )}
         </main>
