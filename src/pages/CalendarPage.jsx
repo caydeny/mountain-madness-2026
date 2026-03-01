@@ -14,6 +14,7 @@ const FAKE_SPENDING = [35, 0, 20, 120, 18, 100, 0, 40];
 export default function CalendarPage({ accessToken, setAccessToken, events, setEvents, loading, setLoading, userName, userGoal, setUserGoal, userGoogleId, userElo, setUserElo }) {
     const [budgetMap, setBudgetMap] = useState({});  // { eventId → { price, reasoning } }
     const [predicting, setPredicting] = useState(false);
+    const [syncing, setSyncing] = useState(false);
 
     // Streak simulation state
     const [currentDate, setCurrentDate] = useState(new Date('2026-02-28T00:00:00'));
@@ -82,32 +83,52 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
         const fetchEvents = async () => {
             setLoading(true)
             try {
-                const response = await fetch(
-                    'https://www.googleapis.com/calendar/v3/calendars/primary/events?orderBy=startTime&singleEvents=true&maxResults=250',
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    }
-                )
-                const data = await response.json()
+                // 1. Fetch user's calendar list
+                const listResp = await fetch(
+                    'https://www.googleapis.com/calendar/v3/users/me/calendarList',
+                    { headers: { Authorization: `Bearer ${accessToken}` } }
+                );
+                const listData = await listResp.json();
 
-                if (data.items) {
-                    // Convert raw items → CalendarEvent model
-                    const calendarEvents = parseRawEvents(data.items);
-
-                    const formatedEvents = calendarEvents.map((ce) => ({
-                        id: ce.id,
-                        title: ce.title,
-                        start: new Date(ce.startTime),
-                        end: new Date(ce.endTime),
-                        allDay: ce.isAllDay,
-                        price: 0, // will be filled after prediction
-                        reasoning: "", // will be filled after prediction
-                        _raw: ce, // keep the CalendarEvent for the prompt
-                    }))
-                    setEvents(formatedEvents)
+                if (!listData.items) {
+                    setLoading(false);
+                    return;
                 }
+
+                // 2. Fetch events from all calendars
+                const allFetchedEvents = [];
+                const promises = listData.items.map(async (cal) => {
+                    try {
+                        const evResp = await fetch(
+                            `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cal.id)}/events?orderBy=startTime&singleEvents=true&maxResults=250`,
+                            { headers: { Authorization: `Bearer ${accessToken}` } }
+                        );
+                        if (!evResp.ok) return; // Skip failed calendars gracefully
+
+                        const evData = await evResp.json();
+                        if (evData.items) {
+                            const calendarEvents = parseRawEvents(evData.items);
+                            const formatted = calendarEvents.map((ce) => ({
+                                id: ce.id,
+                                title: ce.title,
+                                start: new Date(ce.startTime),
+                                end: new Date(ce.endTime),
+                                allDay: ce.isAllDay,
+                                price: 0,
+                                reasoning: "",
+                                color: cal.backgroundColor, // Inject the calendar's color
+                                _raw: ce,
+                            }));
+                            allFetchedEvents.push(...formatted);
+                        }
+                    } catch (err) {
+                        console.error(`Error fetching calendar ${cal.id}:`, err);
+                    }
+                });
+
+                await Promise.all(promises);
+                setEvents(allFetchedEvents);
+
             } catch (error) {
                 console.error('Error fetching calendar events:', error)
             } finally {
@@ -172,6 +193,128 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
             alert('Failed to predict budgets.');
         } finally {
             setPredicting(false);
+        }
+    };
+
+    // 2.5️⃣ Handle Calendar Sync (add/remove)
+    const handleSync = async () => {
+        if (!accessToken || !userGoogleId || events.length === 0) return;
+        setSyncing(true);
+
+        try {
+            // Re-fetch latest events from all Google Calendars
+            const listResp = await fetch(
+                'https://www.googleapis.com/calendar/v3/users/me/calendarList',
+                { headers: { Authorization: `Bearer ${accessToken}` } }
+            );
+            const listData = await listResp.json();
+
+            if (!listData.items) {
+                setSyncing(false);
+                return;
+            }
+
+            const allFetchedLiveEvents = [];
+            const promises = listData.items.map(async (cal) => {
+                try {
+                    const evResp = await fetch(
+                        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cal.id)}/events?orderBy=startTime&singleEvents=true&maxResults=250`,
+                        { headers: { Authorization: `Bearer ${accessToken}` } }
+                    );
+                    if (!evResp.ok) return;
+
+                    const evData = await evResp.json();
+                    if (evData.items) {
+                        const calendarEvents = parseRawEvents(evData.items);
+                        const formatted = calendarEvents.map((ce) => ({
+                            id: ce.id,
+                            title: ce.title,
+                            start: new Date(ce.startTime),
+                            end: new Date(ce.endTime),
+                            allDay: ce.isAllDay,
+                            price: 0,
+                            reasoning: "",
+                            color: cal.backgroundColor,
+                            _raw: ce,
+                        }));
+                        allFetchedLiveEvents.push(...formatted);
+                    }
+                } catch (err) {
+                    console.error(`Error fetching calendar ${cal.id}:`, err);
+                }
+            });
+
+            await Promise.all(promises);
+            setEvents(allFetchedLiveEvents); // Update UI
+
+            // 1. Detect Deleted Events: items in budgetMap NOT in live Calendar Events
+            const liveEventIds = new Set(allFetchedLiveEvents.map(e => e.id));
+            const deletedEventIds = Object.keys(budgetMap).filter(id => !liveEventIds.has(id));
+
+            if (deletedEventIds.length > 0) {
+                console.log('Sending delete to Supabase for:', deletedEventIds);
+                const { error: deleteError } = await supabase
+                    .from('events')
+                    .delete()
+                    .in('event_id', deletedEventIds);
+
+                if (deleteError) {
+                    console.error("Error deleting old events:", deleteError);
+                } else {
+                    const newMap = { ...budgetMap };
+                    deletedEventIds.forEach(id => delete newMap[id]);
+                    setBudgetMap(newMap);
+                }
+            }
+
+            // 2. Detect New Future Events: items in live Calendar NOT in budgetMap
+            const now = new Date();
+            const newEvents = allFetchedLiveEvents.filter(
+                (e) => e._raw && e.start >= now && budgetMap[e.id] === undefined
+            );
+
+            if (newEvents.length > 0) {
+                console.log('Sending new events to Gemini for budget prediction…', newEvents);
+                const promptEvents = newEvents.map((e) => e._raw.toPromptJSON());
+
+                // Keep UI predictable by reusing logic in Predict
+                const newBudgets = await predictBudgets(promptEvents, currentDate, MONTHLY_INCOME, SAVINGS_GOAL);
+
+                const inserts = newBudgets.map(b => ({
+                    google_id: userGoogleId,
+                    name: userName,
+                    event_id: b.eventId,
+                    title: b.title,
+                    predicted_budget: b.predictedBudget,
+                    reasoning: b.reasoning
+                }));
+
+                const { error: insertError } = await supabase.from('events').insert(inserts);
+                if (insertError) {
+                    console.error('Error saving new sync budgets to Supabase:', insertError);
+                } else {
+                    const map = { ...budgetMap };
+                    // Because step 1 might have altered the map, we operate on the freshest version via functional state updating
+                    setBudgetMap(prev => {
+                        const nextMap = { ...prev };
+                        newBudgets.forEach((b) => {
+                            nextMap[b.eventId] = {
+                                price: b.predictedBudget,
+                                reasoning: b.reasoning
+                            };
+                        });
+                        return nextMap;
+                    });
+                }
+            } else if (deletedEventIds.length === 0) {
+                console.log("Sync complete. Calendar was already up-to-date.");
+            }
+
+        } catch (error) {
+            console.error('Error syncing calendar:', error);
+            alert('Failed to sync calendar fully.');
+        } finally {
+            setSyncing(false);
         }
     };
 
@@ -298,6 +441,23 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
                             }}
                         >
                             Next Day ({format(currentDate, 'MMM d')})
+                        </button>
+                        <button
+                            onClick={handleSync}
+                            disabled={syncing || predicting}
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: (syncing || predicting) ? '#e5e7eb' : '#3b82f6',
+                                color: (syncing || predicting) ? '#9ca3af' : 'white',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontWeight: '700',
+                                cursor: (syncing || predicting) ? 'not-allowed' : 'pointer',
+                                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                                transition: 'all 0.2s ease'
+                            }}
+                        >
+                            {syncing ? "Syncing..." : "Sync Calendar"}
                         </button>
                         <button
                             onClick={handlePredict}
