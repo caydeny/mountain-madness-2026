@@ -127,7 +127,6 @@ export default function CalendarView({
                     date={date}
                     onNavigate={setDate}
                     components={components}
-
                 />
             </div>
         </>
