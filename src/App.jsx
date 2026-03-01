@@ -22,6 +22,12 @@ function App() {
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(false)
 
+  // Calendar Simulation State
+  const [currentDate, setCurrentDate] = useState(new Date('2026-02-28T00:00:00'));
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [streakMap, setStreakMap] = useState({});
+
   useEffect(() => {
     if (!accessToken) return
 
@@ -190,6 +196,14 @@ function App() {
                 userGoogleId={userGoogleId}
                 userElo={userElo}
                 setUserElo={updateElo}
+                currentDate={currentDate}
+                setCurrentDate={setCurrentDate}
+                currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+                currentStreak={currentStreak}
+                setCurrentStreak={setCurrentStreak}
+                streakMap={streakMap}
+                setStreakMap={setStreakMap}
               />
             }
           />

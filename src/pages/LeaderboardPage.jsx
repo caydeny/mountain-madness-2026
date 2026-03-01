@@ -55,7 +55,7 @@ export default function LeaderboardPage({ userName, userEmail, userElo, setUserE
                                 ))}
                             </div>
                             <div className="info-description">
-                                <p>Welcome to Ranked: Save money daily to increase your elo points and climb the ranks. Compete in leaderboards both globally and with your friends, unlock new achievements and grind to Crystal Cashlord! Go Saver!</p>
+                                <p>Welcome to Ranked: Save money daily by spending less than what RBC predicts your daily spend to be to gain elo points. The more elo you have, the higher your rank. Compete in leaderboards both globally and with your friends, unlock new achievements and grind to Crystal Cashlord! Go Saver!</p>
                             </div>
                         </div>
 
