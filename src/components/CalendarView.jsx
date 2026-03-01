@@ -9,6 +9,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarView.css'
 
 import { askLLM } from "../services/LLM";
+import GoalProgressBar from "./GoalProgressBar";
+import GoalActions from "./GoalActions";
 
 const locales = {
     'en-US': enUS,
@@ -32,13 +34,20 @@ function defaultGetDayTotal(date) {
     const key = format(date, 'yyyy-MM-dd')
     return DEFAULT_DAY_TOTALS[key] ?? 0
 }
-// ─────────────────────────────────────────────────────────────────────────────
 
-export default function CalendarView({ events, getDayTotal = defaultGetDayTotal }) {
+export default function CalendarView({ 
+    events, 
+    getDayTotal = defaultGetDayTotal,
+    goalName = "Monthly Savings Goal",
+    currentAmount = 400,
+    targetAmount = 1000
+}) {
     const [prompt, setPrompt] = useState("");
     const [out, setOut] = useState("");
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState("");
+
+    const [goal, setGoal] = useState(null);
 
     const run = async () => {
         setLoading(true);
@@ -93,6 +102,18 @@ export default function CalendarView({ events, getDayTotal = defaultGetDayTotal 
 
     return (
         <>
+            <div style={{ padding: "0 2rem" }}>
+                {goal && (
+                    <GoalProgressBar
+                        goalName={goal.name}
+                        currentAmount={goal.currentAmount ?? 0}
+                        targetAmount={goal.targetAmount}
+                    />
+                )}
+
+                <GoalActions onGoalChange={setGoal} />
+            </div>
+
             <div className="calendar-container">
                 <Calendar
                     localizer={localizer}
