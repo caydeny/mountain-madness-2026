@@ -1,24 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { supabase } from "../utils/supabase";
 import "./GoalActions.css";
-
-const STORAGE_KEY = "rbc_active_goal";
-
-function loadGoal() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveGoal(goal) {
-  if (goal === null) {
-    localStorage.removeItem(STORAGE_KEY);
-  } else {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(goal));
-  }
-}
 
 /* ─── tiny modal wrapper ─────────────────────────────────── */
 function Modal({ onClose, children }) {
@@ -56,7 +38,7 @@ function AddGoalModal({ onClose, onCreate }) {
   const handleCreate = () => {
     setTouched({ name: true, amount: true });
     if (!valid) return;
-    onCreate({ name: name.trim(), targetAmount: Number(amount), currentAmount: 0, status: "active" });
+    onCreate({ name: name.trim(), targetAmount: Number(amount) });
   };
 
   return (
@@ -124,59 +106,76 @@ function ConfirmModal({ onClose, title, body, confirmLabel, confirmClass, onConf
 }
 
 /* ─── GoalActions ────────────────────────────────────────── */
-export default function GoalActions({ currentAmount: externalCurrent, onGoalChange }) {
-  const [goal, setGoal] = useState(loadGoal);
+export default function GoalActions({ goal, onGoalChange, userGoogleId, currentAmount: externalCurrent }) {
   const [modal, setModal] = useState(null); // null | "add" | "giveup" | "finish"
 
-  // allow simulating savings progress locally if no external source drives currentAmount
-  const [simExtra, setSimExtra] = useState(0);
-  const effectiveCurrent =
-    externalCurrent !== undefined ? externalCurrent : (goal?.currentAmount ?? 0) + simExtra;
-
+  const effectiveCurrent = externalCurrent !== undefined ? externalCurrent : (goal?.value ?? 0);
   const closeModal = useCallback(() => setModal(null), []);
 
-  useEffect(() => {
-    onGoalChange?.(goal);
-  }, []);
+  const handleCreate = async (newGoal) => {
+    if (!userGoogleId) return;
 
-  const updateGoal = (next) => {
-    setGoal(next);
-    saveGoal(next);
-    onGoalChange?.(next);
-  };
+    const { data, error } = await supabase
+      .from('goals')
+      .insert([{
+        google_id: userGoogleId,
+        name: newGoal.name,
+        total_cost: newGoal.targetAmount,
+        value: 0,
+        status: true
+      }])
+      .select()
+      .single();
 
-  const handleCreate = (newGoal) => {
-    setSimExtra(0);
-    updateGoal(newGoal);
+    if (!error && data) {
+      onGoalChange(data);
+    }
     closeModal();
   };
 
-  const handleGiveUp = () => {
-    updateGoal(null);
-    setSimExtra(0);
+  const handleGiveUp = async () => {
+    if (!goal || !userGoogleId) return;
+
+    // We update status to false instead of deleting (per typical history tracking)
+    // or just delete if that's what user prefers. "Remove goal" usually implies delete or status=false.
+    // User said: "check if that table has the users google_id and status = false... display buttons to add".
+    // So we update status to false.
+    const { error } = await supabase
+      .from('goals')
+      .update({ status: false })
+      .eq('id', goal.id);
+
+    if (!error) {
+      onGoalChange(null);
+    }
     closeModal();
   };
 
-  const handleFinish = (status) => {
-    updateGoal({ ...goal, status, currentAmount: effectiveCurrent });
+  const handleFinish = async (isSuccess) => {
+    if (!goal || !userGoogleId) return;
+
+    const { error } = await supabase
+      .from('goals')
+      .update({
+        status: false,
+        value: isSuccess ? goal.total_cost : effectiveCurrent
+      })
+      .eq('id', goal.id);
+
+    if (!error) {
+      onGoalChange(null);
+    }
     closeModal();
   };
 
-  const handleStartNew = () => {
-    updateGoal(null);
-    setSimExtra(0);
-    setModal("add");
-  };
-
-  const isCompleted = goal && effectiveCurrent >= goal.targetAmount;
-  const isActive = goal?.status === "active";
-  const isDone = goal && (goal.status === "completed" || goal.status === "failed");
+  const isActive = goal?.status === true;
+  const isCompleted = goal && effectiveCurrent >= goal.total_cost;
 
   return (
     <>
       <div className="goal-actions-bar">
-        {/* ── No goal ── */}
-        {!goal && (
+        {/* ── No active goal ── */}
+        {!isActive && (
           <button className="ga-btn ga-btn-primary" onClick={() => setModal("add")}>
             + Add a Goal
           </button>
@@ -194,18 +193,6 @@ export default function GoalActions({ currentAmount: externalCurrent, onGoalChan
               onClick={() => setModal("finish")}
             >
               {isCompleted ? "✓ Completed Goal" : "✗ Failed Goal"}
-            </button>
-          </>
-        )}
-
-        {/* ── Completed / Failed ── */}
-        {isDone && (
-          <>
-            <span className={`ga-status-pill ${goal.status === "completed" ? "ga-pill-completed" : "ga-pill-failed"}`}>
-              {goal.status === "completed" ? "✦ Completed" : "✗ Failed"}
-            </span>
-            <button className="ga-btn ga-btn-primary" onClick={handleStartNew}>
-              Start New Goal
             </button>
           </>
         )}
@@ -238,7 +225,7 @@ export default function GoalActions({ currentAmount: externalCurrent, onGoalChan
           }
           confirmLabel={isCompleted ? "Mark Completed" : "Mark Failed"}
           confirmClass={isCompleted ? "ga-btn-success" : "ga-btn-danger"}
-          onConfirm={() => handleFinish(isCompleted ? "completed" : "failed")}
+          onConfirm={() => handleFinish(isCompleted)}
         />
       )}
     </>

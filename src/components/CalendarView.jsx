@@ -35,19 +35,17 @@ function defaultGetDayTotal(date) {
     return DEFAULT_DAY_TOTALS[key] ?? 0
 }
 
-export default function CalendarView({ 
-    events, 
+export default function CalendarView({
+    events,
     getDayTotal = defaultGetDayTotal,
-    goalName = "Monthly Savings Goal",
-    currentAmount = 400,
-    targetAmount = 1000
+    userGoal,
+    setUserGoal,
+    userGoogleId
 }) {
     const [prompt, setPrompt] = useState("");
     const [out, setOut] = useState("");
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState("");
-
-    const [goal, setGoal] = useState(null);
 
     const run = async () => {
         setLoading(true);
@@ -103,15 +101,19 @@ export default function CalendarView({
     return (
         <>
             <div style={{ padding: "0 2rem" }}>
-                {goal && (
+                {userGoal && userGoal.status === true && (
                     <GoalProgressBar
-                        goalName={goal.name}
-                        currentAmount={goal.currentAmount ?? 0}
-                        targetAmount={goal.targetAmount}
+                        goalName={userGoal.name}
+                        currentAmount={userGoal.value ?? 0}
+                        targetAmount={userGoal.total_cost}
                     />
                 )}
 
-                <GoalActions onGoalChange={setGoal} />
+                <GoalActions
+                    onGoalChange={setUserGoal}
+                    goal={userGoal}
+                    userGoogleId={userGoogleId}
+                />
             </div>
 
             <div className="calendar-container">

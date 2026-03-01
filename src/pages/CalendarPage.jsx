@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import CalendarView from '../components/CalendarView'
 
-export default function CalendarPage({ accessToken, setAccessToken, events, setEvents, loading, setLoading, userName }) {
+export default function CalendarPage({ accessToken, setAccessToken, events, setEvents, loading, setLoading, userName, userGoal, setUserGoal, userGoogleId }) {
     useEffect(() => {
         if (!accessToken) return
 
@@ -54,7 +54,12 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
                     <p>Syncing calendar events...</p>
                 </div>
             ) : (
-                <CalendarView events={events} />
+                <CalendarView
+                    events={events}
+                    userGoal={userGoal}
+                    setUserGoal={setUserGoal}
+                    userGoogleId={userGoogleId}
+                />
             )}
         </main>
     )
