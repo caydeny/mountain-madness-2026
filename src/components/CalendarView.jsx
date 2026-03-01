@@ -98,14 +98,28 @@ export default function CalendarView({
         const DateCellWrapper = ({ children, value }) => {
             const key = format(value, 'yyyy-MM-dd')
             const streakCount = streakMap[key]
-            return (
-                <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
-                    {children}
-                    {isLoggedIn && streakCount != null && (
+
+            let badgeContent = null;
+            if (isLoggedIn && streakCount != null) {
+                if (streakCount === -1) {
+                    badgeContent = (
+                        <div className="streak-badge missed" title="Missed Budget! ❌">
+                            ❌
+                        </div>
+                    );
+                } else if (streakCount > 0) {
+                    badgeContent = (
                         <div className="streak-badge" title={`🔥 ${streakCount} day streak!`}>
                             🔥 {streakCount}
                         </div>
-                    )}
+                    );
+                }
+            }
+
+            return (
+                <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
+                    {children}
+                    {badgeContent}
                 </div>
             )
         }

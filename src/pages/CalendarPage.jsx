@@ -191,8 +191,11 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
             }
         } else {
             newStreak = 0;
-            // Intentional: we don't clear the previous map entries, 
-            // just don't add a streak entry for days where they overspend.
+            // Record a missed streak marker (-1) so the calendar displays an X
+            setStreakMap(prev => ({
+                ...prev,
+                [targetFormat]: -1
+            }));
 
             // Calculate negative Elo change
             if (totalForDay > 0) {

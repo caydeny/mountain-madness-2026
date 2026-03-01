@@ -9,6 +9,12 @@ export default function LeaderboardContainer({ userElo, userName, userEmail }) {
     const [memberships, setMemberships] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Create Leaderboard Modal State
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [leaderboardName, setLeaderboardName] = useState('');
+    const [copied, setCopied] = useState(false);
+    const mockJoinLink = `https://mountainmadness.app/join/lb-${Math.random().toString(36).substring(2, 8)}`;
+
     useEffect(() => {
         if (!userEmail) return;
 
@@ -48,8 +54,15 @@ export default function LeaderboardContainer({ userElo, userName, userEmail }) {
 
     return (
         <div className="leaderboard-container">
+            <button
+                className="create-leaderboard-btn"
+                onClick={() => setShowCreateModal(true)}
+            >
+                Create Leaderboard
+            </button>
+
             <div className="leaderboard-selector-container">
-                <label htmlFor="leaderboard-select" className="selector-label">View Rankings:</label>
+                <label htmlFor="leaderboard-select" className="selector-label">View Leaderboards:</label>
                 <select
                     id="leaderboard-select"
                     className="leaderboard-select"
@@ -80,6 +93,54 @@ export default function LeaderboardContainer({ userElo, userName, userEmail }) {
                     />
                 )}
             </div>
+
+            {/* Create Leaderboard Modal */}
+            {showCreateModal && (
+                <div className="create-modal-overlay" onClick={() => setShowCreateModal(false)}>
+                    <div className="create-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            className="modal-close-btn"
+                            onClick={() => setShowCreateModal(false)}
+                        >
+                            ×
+                        </button>
+                        <h2 className="modal-title">Share this link to compete with your friends!</h2>
+
+                        <div className="modal-input-group">
+                            <label>Leaderboard Name</label>
+                            <input
+                                type="text"
+                                placeholder="Enter a name for your leaderboard..."
+                                value={leaderboardName}
+                                onChange={(e) => setLeaderboardName(e.target.value)}
+                                className="modal-text-input"
+                            />
+                        </div>
+
+                        <div className="modal-input-group">
+                            <label>Invite Link</label>
+                            <div className="modal-copy-row">
+                                <input
+                                    type="text"
+                                    readOnly
+                                    value={mockJoinLink}
+                                    className="modal-text-input link-input"
+                                />
+                                <button
+                                    className="modal-copy-btn"
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(mockJoinLink);
+                                        setCopied(true);
+                                        setTimeout(() => setCopied(false), 2000);
+                                    }}
+                                >
+                                    {copied ? "Copied!" : "Copy"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
