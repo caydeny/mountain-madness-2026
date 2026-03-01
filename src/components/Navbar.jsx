@@ -1,8 +1,15 @@
-import React from "react"
-import "./Navbar.css"
-import logo from "../assets/logo.png"
+import React from 'react'
+import { useGoogleLogin } from '@react-oauth/google'
+import './Navbar.css'
+import logo from '../assets/logo.png'
 
-export default function Navbar() {
+export default function Navbar({ onLoginSuccess, isLoggedIn }) {
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => onLoginSuccess(codeResponse.access_token),
+    onError: (error) => console.error('Login Failed:', error),
+    scope: 'https://www.googleapis.com/auth/calendar.readonly',
+  })
+
   return (
     <nav className="navbar">
       <div className="navbar-left-group">
@@ -22,7 +29,13 @@ export default function Navbar() {
       </div>
 
       <div className="navbar-right">
-        <button className="connect-btn">Connect Calendar</button>
+        {isLoggedIn ? (
+          <span className="connected-status">✓ Calendar Connected</span>
+        ) : (
+          <button className="connect-btn" onClick={() => login()}>
+            Connect Calendar
+          </button>
+        )}
       </div>
     </nav>
   )
