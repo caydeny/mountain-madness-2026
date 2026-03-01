@@ -82,51 +82,51 @@
 
 /* Rank Colors */
 .rank-iron {
-  color: #5B5A56;
+  color: grey;
+  text-shadow: 0 0 10px darkgrey;
 }
 
 .rank-bronze {
   color: #8C5220;
+  text-shadow: 0 0 10px lightsalmon;
 }
 
 .rank-silver {
   color: #A1A9B1;
+  text-shadow: 0 0 10px lightcyan;
 }
 
 .rank-gold {
   color: #F1C40F;
-  text-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
+  text-shadow: 0 0 10px lightgoldenrodyellow;
 }
 
 .rank-platinum {
-  color: #38E4B7;
-  text-shadow: 0 0 10px rgba(56, 228, 183, 0.4);
+  color: lightskyblue;
+  text-shadow: 0 0 10px lightblue;
 }
 
 .rank-emerald {
   color: #2ECC71;
-  text-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+  text-shadow: 0 0 10px lightgreen;
 }
 
 .rank-diamond {
   color: #9B59B6;
-  text-shadow: 0 0 10px rgba(155, 89, 182, 0.4);
+  text-shadow: 0 0 10px darkorchid;
 }
 
-.rank-master {
+.rank-ruby {
   color: #E74C3C;
-  text-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
+  text-shadow: 0 0 10px lightcoral;
 }
 
-.rank-grandmaster {
-  color: #E67E22;
-  text-shadow: 0 0 10px rgba(230, 126, 34, 0.4);
+.rank-sapphire {
+  color: blue;
+  text-shadow: 0 0 10px lightskyblue;
 }
 
-.rank-challenger {
-  background: linear-gradient(to right, #f1c40f, #e74c3c);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px rgba(241, 196, 15, 0.5);
+.rank-crystal {
+  color: darkmagenta;
+  text-shadow: 0 0 20px lightcoral;
 }
