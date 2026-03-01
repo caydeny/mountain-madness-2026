@@ -1,0 +1,132 @@
+.rank-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #000000;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.rank-board {
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: 320px;
+  text-align: center;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.stat-label {
+  color: #555555;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 0.75rem 0.5rem;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.action-btn:active {
+  transform: translateY(0);
+}
+
+.increase-btn {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+}
+
+.increase-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.decrease-btn {
+  background: linear-gradient(135deg, #f43f5e, #e11d48);
+}
+
+.decrease-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4);
+}
+
+/* Rank Colors */
+.rank-iron {
+  color: #5B5A56;
+}
+
+.rank-bronze {
+  color: #8C5220;
+}
+
+.rank-silver {
+  color: #A1A9B1;
+}
+
+.rank-gold {
+  color: #F1C40F;
+  text-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
+}
+
+.rank-platinum {
+  color: #38E4B7;
+  text-shadow: 0 0 10px rgba(56, 228, 183, 0.4);
+}
+
+.rank-emerald {
+  color: #2ECC71;
+  text-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+}
+
+.rank-diamond {
+  color: #9B59B6;
+  text-shadow: 0 0 10px rgba(155, 89, 182, 0.4);
+}
+
+.rank-master {
+  color: #E74C3C;
+  text-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
+}
+
+.rank-grandmaster {
+  color: #E67E22;
+  text-shadow: 0 0 10px rgba(230, 126, 34, 0.4);
+}
+
+.rank-challenger {
+  background: linear-gradient(to right, #f1c40f, #e74c3c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(241, 196, 15, 0.5);
+}

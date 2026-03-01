@@ -1,5 +1,6 @@
 import React from 'react'
 import { useGoogleLogin } from '@react-oauth/google'
+import { Link } from 'react-router-dom'
 import './Navbar.css'
 import logo from '../assets/logo.png'
 
@@ -23,8 +24,9 @@ export default function Navbar({ onLoginSuccess, isLoggedIn }) {
         </div>
 
         <div className="navbar-links">
+          <Link to="/">Home</Link>
           <a href="#">Goal Setting</a>
-          <a href="#">Leaderboard</a>
+          <Link to="/leaderboard">Leaderboard</Link>
         </div>
       </div>
 
