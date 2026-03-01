@@ -33,10 +33,10 @@ export default function Navbar({ onLoginSuccess, isLoggedIn, userName }) {
       <div className="navbar-right">
         {isLoggedIn ? (
           <div className="user-status-group">
-            <span className="connected-status">✓ Calendar Connected</span>
             {userName && userName !== 'Me' && (
               <span className="user-greeting">Hi, {userName}</span>
             )}
+            <span className="connected-status">✓ Calendar Connected</span>
           </div>
         ) : (
           <button className="connect-btn" onClick={() => login()}>
