@@ -24,25 +24,14 @@ const localizer = dateFnsLocalizer({
     locales,
 })
 
-const STREAK_DATES = [
-    '2026-02-22',
-    '2026-02-23',
-    '2026-02-24',
-]
-
-const STREAK_MAP = STREAK_DATES.reduce((acc, date, index) => {
-    acc[date] = index + 1
-    return acc
-}, {})
-
-
 
 export default function CalendarView({
     events,
     isLoggedIn = false,
     userGoal,
     setUserGoal,
-    userGoogleId
+    userGoogleId,
+    streakMap = {}
 }) {
     const [prompt, setPrompt] = useState("");
     const [out, setOut] = useState("");
@@ -98,12 +87,17 @@ export default function CalendarView({
                 <span className="rbc-event-price-badge">
                     ${event.price != null ? Number(event.price).toLocaleString() : '0'}
                 </span>
+                {event.reasoning && (
+                    <div className="rbc-event-tooltip">
+                        {event.reasoning}
+                    </div>
+                )}
             </div>
         )
 
         const DateCellWrapper = ({ children, value }) => {
             const key = format(value, 'yyyy-MM-dd')
-            const streakCount = STREAK_MAP[key]
+            const streakCount = streakMap[key]
             return (
                 <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
                     {children}
@@ -121,7 +115,7 @@ export default function CalendarView({
             day: { header: DayTotalHeader, event: EventComponent },
             month: { event: EventComponent, dateCellWrapper: DateCellWrapper },
         }
-    }, [events, isLoggedIn])
+    }, [events, isLoggedIn, streakMap])
 
     return (
         <>
