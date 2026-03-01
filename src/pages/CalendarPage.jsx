@@ -9,17 +9,15 @@ import { format, addDays } from 'date-fns'
 const currentDate = new Date().toISOString().split('T')[0]; // e.g. "2026-02-28"
 const MONTHLY_INCOME = 5000;
 const SAVINGS_GOAL = 1500;
-const FAKE_SPENDING = [35, 0, 20, 120, 18, 100, 0, 40];
+const FAKE_SPENDING = [35, 0, 20, 120, 35, 200, 0, 40];
 
-export default function CalendarPage({ accessToken, setAccessToken, events, setEvents, loading, setLoading, userName, userGoal, setUserGoal, userGoogleId, userElo, setUserElo }) {
+export default function CalendarPage({
+    accessToken, setAccessToken, events, setEvents, loading, setLoading,
+    userName, userGoal, setUserGoal, userGoogleId, userElo, setUserElo,
+    currentDate, setCurrentDate, currentIndex, setCurrentIndex, currentStreak, setCurrentStreak, streakMap, setStreakMap
+}) {
     const [budgetMap, setBudgetMap] = useState({});  // { eventId → { price, reasoning } }
     const [predicting, setPredicting] = useState(false);
-
-    // Streak simulation state
-    const [currentDate, setCurrentDate] = useState(new Date('2026-02-28T00:00:00'));
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [currentStreak, setCurrentStreak] = useState(0);
-    const [streakMap, setStreakMap] = useState({}); // { '2026-02-28': 1, ... }
 
     // Load budgets and streaks from Supabase on mount
     useEffect(() => {
@@ -226,7 +224,13 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
             }
 
             // Calculate positive Elo change
-            if (totalForDay > 0) {
+            if (spent === 0) {
+                if (totalForDay === 0) {
+                    eloChange = 15;
+                } else {
+                    eloChange = 25;
+                }
+            } else if (totalForDay > 0) {
                 eloChange = Math.round(((totalForDay - spent) / totalForDay) * 100);
             }
         } else {
