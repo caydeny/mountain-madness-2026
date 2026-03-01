@@ -9,7 +9,7 @@ const MONTHLY_INCOME = 5000;
 const SAVINGS_GOAL = 1500;
 
 export default function CalendarPage({ accessToken, setAccessToken, events, setEvents, loading, setLoading, userName, userGoal, setUserGoal, userGoogleId }) {
-    const [budgetMap, setBudgetMap] = useState({});  // { eventId → predictedBudget }
+    const [budgetMap, setBudgetMap] = useState({});  // { eventId → { price, reasoning } }
     const [predicting, setPredicting] = useState(false);
 
     // Load budgets from Supabase on mount
@@ -19,13 +19,18 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
             try {
                 const { data, error } = await supabase
                     .from('events')
-                    .select('event_id, predicted_budget')
+                    .select('event_id, predicted_budget, reasoning')
                     .eq('google_id', userGoogleId);
 
                 if (error) throw error;
                 if (data) {
                     const map = {};
-                    data.forEach((b) => { map[b.event_id] = b.predicted_budget; });
+                    data.forEach((b) => {
+                        map[b.event_id] = {
+                            price: b.predicted_budget,
+                            reasoning: b.reasoning
+                        };
+                    });
                     setBudgetMap(map);
                 }
             } catch (err) {
@@ -63,6 +68,7 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
                         end: new Date(ce.endTime),
                         allDay: ce.isAllDay,
                         price: 0, // will be filled after prediction
+                        reasoning: "", // will be filled after prediction
                         _raw: ce, // keep the CalendarEvent for the prompt
                     }))
                     setEvents(formatedEvents)
@@ -116,7 +122,12 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
 
             // Build lookup map
             const map = { ...budgetMap };
-            newBudgets.forEach((b) => { map[b.eventId] = b.predictedBudget; });
+            newBudgets.forEach((b) => {
+                map[b.eventId] = {
+                    price: b.predictedBudget,
+                    reasoning: b.reasoning
+                };
+            });
             setBudgetMap(map);
         } catch (err) {
             console.error('Budget prediction failed:', err);
@@ -129,7 +140,8 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
     // 3️⃣ Merge budget predictions into events
     const enrichedEvents = events.map((e) => ({
         ...e,
-        price: budgetMap[e.id] ?? e.price ?? 0,
+        price: budgetMap[e.id]?.price ?? e.price ?? 0,
+        reasoning: budgetMap[e.id]?.reasoning ?? e.reasoning ?? "",
     }));
 
     return (
