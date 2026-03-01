@@ -24,11 +24,14 @@ const localizer = dateFnsLocalizer({
     locales,
 })
 
-// Replace with real data later, e.g:
-//   getDayTotal={(date) => apiData[format(date, 'yyyy-MM-dd')]?.total ?? 0}
-const DEFAULT_DAY_TOTALS = {
-    // 'yyyy-MM-dd': dollar_amount
-}
+const STREAK_DATES = new Set([
+    '2026-02-22',
+    '2026-02-23',
+    '2026-02-24',
+    
+])
+
+const DEFAULT_DAY_TOTALS = {}
 
 function defaultGetDayTotal(date) {
     const key = format(date, 'yyyy-MM-dd')
@@ -93,10 +96,25 @@ export default function CalendarView({
             </div>
         )
 
+        const DateCellWrapper = ({ children, value }) => {
+            const key = format(value, 'yyyy-MM-dd')
+            const isStreak = STREAK_DATES.has(key)
+            return (
+                <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
+                    {children}
+                    {isStreak && (
+                        <div className="streak-flame-badge" title="🔥 Streak day!">
+                            🔥
+                        </div>
+                    )}
+                </div>
+            )
+        }
+
         return {
             week: { header: DayTotalHeader, event: EventComponent },
             day: { header: DayTotalHeader, event: EventComponent },
-            month: { event: EventComponent },
+            month: { event: EventComponent, dateCellWrapper: DateCellWrapper },
         }
     }, [getDayTotal])
 
