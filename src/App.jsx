@@ -5,6 +5,8 @@ import './App.css'
 import Navbar from './components/Navbar'
 import CalendarPage from './pages/CalendarPage'
 import LeaderboardPage from './pages/LeaderboardPage'
+import RankUpModal from './components/RankUpModal'
+import { getRankFromElo, RANKS } from './utils/rankUtils'
 
 function App() {
   const [accessToken, setAccessToken] = useState(null)
@@ -12,6 +14,8 @@ function App() {
   const [userName, setUserName] = useState('Me')
   const [userElo, setUserElo] = useState(0)
   const [userRank, setUserRank] = useState('iron')
+  const [previousRank, setPreviousRank] = useState('iron')
+  const [showRankUp, setShowRankUp] = useState(false)
   const [userGoal, setUserGoal] = useState(null)
   const [userGoogleId, setUserGoogleId] = useState(null)
   const [events, setEvents] = useState([])
@@ -41,7 +45,7 @@ function App() {
         // Sync with Supabase profiles table
         const { data, error } = await supabase
           .from('profiles')
-          .select('*')
+          .select('*, previous_rank')
           .eq('email', email)
           .single()
 
@@ -64,11 +68,13 @@ function App() {
           if (!createError && newUser) {
             setUserElo(newUser.elo)
             setUserRank(newUser.rank)
+            setPreviousRank(newUser.previous_rank || newUser.rank)
           }
         } else if (data) {
           // User exists, use their data
           setUserElo(data.elo)
           setUserRank(data.rank)
+          setPreviousRank(data.previous_rank || data.rank)
 
           // Optionally update name if it changed
           if (data.name !== firstName) {
@@ -95,6 +101,54 @@ function App() {
 
     syncUserWithSupabase()
   }, [accessToken])
+
+  // Detect Rank Up
+  useEffect(() => {
+    if (!userElo) return;
+
+    const currentRankName = getRankFromElo(userElo);
+    const currentIndex = RANKS.findIndex(r => r.toLowerCase() === currentRankName.toLowerCase());
+    const previousIndex = RANKS.findIndex(r => r.toLowerCase() === previousRank.toLowerCase());
+
+    // If current rank index is higher than previous index, it's a rank up!
+    if (currentIndex > previousIndex) {
+      setShowRankUp(true);
+      setPreviousRank(currentRankName);
+
+      // Update Supabase immediately on rank change
+      if (userEmail) {
+        supabase.from('profiles').update({
+          rank: currentRankName,
+          previous_rank: currentRankName
+        }).eq('email', userEmail).then();
+      }
+    } else if (currentIndex < previousIndex) {
+      // If rank decreased, just update the state and DB quietly without celebration
+      setPreviousRank(currentRankName);
+      if (userEmail) {
+        supabase.from('profiles').update({
+          rank: currentRankName,
+          previous_rank: currentRankName
+        }).eq('email', userEmail).then();
+      }
+    }
+
+    setUserRank(currentRankName);
+  }, [userElo, previousRank, userEmail]);
+
+  // Sync previous_rank on app close
+  useEffect(() => {
+    const handleUnload = () => {
+      if (userEmail && userRank) {
+        // Use navigator.sendBeacon or a synchronous-like update if possible, 
+        // but since we update on every rank change above, this is mostly for safety.
+        supabase.from('profiles').update({ previous_rank: userRank }).eq('email', userEmail).then();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, [userEmail, userRank]);
 
   const updateElo = async (newElo) => {
     setUserElo(newElo)
@@ -149,6 +203,12 @@ function App() {
             }
           />
         </Routes>
+        {showRankUp && (
+          <RankUpModal
+            rank={userRank}
+            onClose={() => setShowRankUp(false)}
+          />
+        )}
       </div>
     </Router>
   )
