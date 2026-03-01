@@ -69,14 +69,14 @@ export default function CalendarView({
 
             const todayCost = events.reduce((sum, e) => {
                 if (e.start && format(e.start, 'yyyy-MM-dd') === targetFormat) {
-                return sum + (Number(e.price) || 0)
+                    return sum + (Number(e.price) || 0)
                 }
                 return sum
             }, 0)
 
             const monthCost = events.reduce((sum, e) => {
                 if (e.start && isSameMonth(e.start, headerDate)) {
-                return sum + (Number(e.price) || 0)
+                    return sum + (Number(e.price) || 0)
                 }
                 return sum
             }, 0)
@@ -87,14 +87,14 @@ export default function CalendarView({
 
             return (
                 <div className="rbc-week-header">
-                <div className="rbc-week-header-date">
-                    <span className="rbc-week-header-daynum">{dayNum}</span>
-                    <span className="rbc-week-header-dayname">{dayName}</span>
-                </div>
+                    <div className="rbc-week-header-date">
+                        <span className="rbc-week-header-daynum">{dayNum}</span>
+                        <span className="rbc-week-header-dayname">{dayName}</span>
+                    </div>
 
-                <div className="rbc-week-header-total">
-                    Total: ${Number.isFinite(daily) ? daily.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '0'}
-                </div>
+                    <div className="rbc-week-header-total">
+                        Total: ${Number.isFinite(daily) ? daily.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '0'}
+                    </div>
                 </div>
             )
         }
@@ -135,9 +135,10 @@ export default function CalendarView({
         }
 
         return {
-            week: { header: DayTotalHeader, event: EventComponent },
-            day: { header: DayTotalHeader, event: EventComponent },
-            month: { event: EventComponent, dateCellWrapper: DateCellWrapper },
+            event: EventComponent,
+            week: { header: DayTotalHeader },
+            day: { header: DayTotalHeader },
+            month: { dateCellWrapper: DateCellWrapper },
         }
     }, [events, isLoggedIn, streakMap])
 
@@ -167,6 +168,7 @@ export default function CalendarView({
                     endAccessor="end"
                     style={{ height: 'calc(100vh - 120px)' }}
                     className="premium-calendar"
+                    views={['month', 'week', 'day']}
                     view={view}
                     onView={setView}
                     date={date}

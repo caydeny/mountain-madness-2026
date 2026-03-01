@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import CalendarView from '../components/CalendarView'
-import { parseRawEvents } from '../services/eventModel'
+import { parseRawEvents, parseLocalTime } from '../services/eventModel'
 import { predictBudgets } from '../services/budgetService'
 import { supabase } from '../utils/supabase'
 import { format, addDays, endOfMonth } from 'date-fns'
@@ -98,6 +98,8 @@ export default function CalendarPage({
                 const allFetchedEvents = [];
                 const promises = listData.items.map(async (cal) => {
                     try {
+                        if (cal.id.includes('holiday@group.v.calendar.google.com')) return; // Skip holiday calendars
+
                         const evResp = await fetch(
                             `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cal.id)}/events?orderBy=startTime&singleEvents=true&maxResults=250`,
                             { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -110,8 +112,8 @@ export default function CalendarPage({
                             const formatted = calendarEvents.map((ce) => ({
                                 id: ce.id,
                                 title: ce.title,
-                                start: new Date(ce.startTime),
-                                end: new Date(ce.endTime),
+                                start: parseLocalTime(ce.startTime, ce.isAllDay),
+                                end: parseLocalTime(ce.endTime, ce.isAllDay),
                                 allDay: ce.isAllDay,
                                 price: 0,
                                 reasoning: "",
@@ -147,18 +149,20 @@ export default function CalendarPage({
             // Find events that are NOT in budgetMap
             const unpredictedEvents = events.filter(e => e._raw && budgetMap[e.id] === undefined);
 
-            if (unpredictedEvents.length === 0) {
-                console.log('All events already have predicted budgets.');
-                setPredicting(false);
-                return;
-            }
-
             const now = new Date();
             const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
             const thisMonthEvents = unpredictedEvents.filter((e) => {
                 const start = new Date(e.start);
                 return start >= now && start <= endOfMonth;
             });
+
+            if (thisMonthEvents.length === 0) {
+                console.log('All events for this month already have predicted budgets.');
+                alert('All events for this month already have predicted budgets.');
+                setPredicting(false);
+                return;
+            }
+
             const promptEvents = thisMonthEvents.map((e) => e._raw.toPromptJSON());
 
             console.log('Sending events to Gemini for budget prediction…');
@@ -219,6 +223,8 @@ export default function CalendarPage({
             const allFetchedLiveEvents = [];
             const promises = listData.items.map(async (cal) => {
                 try {
+                    if (cal.id.includes('holiday@group.v.calendar.google.com')) return; // Skip holiday calendars
+
                     const evResp = await fetch(
                         `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cal.id)}/events?orderBy=startTime&singleEvents=true&maxResults=250`,
                         { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -231,8 +237,8 @@ export default function CalendarPage({
                         const formatted = calendarEvents.map((ce) => ({
                             id: ce.id,
                             title: ce.title,
-                            start: new Date(ce.startTime),
-                            end: new Date(ce.endTime),
+                            start: parseLocalTime(ce.startTime, ce.isAllDay),
+                            end: parseLocalTime(ce.endTime, ce.isAllDay),
                             allDay: ce.isAllDay,
                             price: 0,
                             reasoning: "",
@@ -271,8 +277,13 @@ export default function CalendarPage({
 
             // 2. Detect New Future Events: items in live Calendar NOT in budgetMap
             const now = new Date();
+            const endOfMonthDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
             const newEvents = allFetchedLiveEvents.filter(
-                (e) => e._raw && e.start >= now && budgetMap[e.id] === undefined
+                (e) => {
+                    if (!e._raw || budgetMap[e.id] !== undefined) return false;
+                    const start = new Date(e.start);
+                    return start >= now && start <= endOfMonthDate;
+                }
             );
 
             if (newEvents.length > 0) {
@@ -280,7 +291,7 @@ export default function CalendarPage({
                 const promptEvents = newEvents.map((e) => e._raw.toPromptJSON());
 
                 // Keep UI predictable by reusing logic in Predict
-                const newBudgets = await predictBudgets(promptEvents, currentDate, MONTHLY_INCOME, SAVINGS_GOAL);
+                const newBudgets = await predictBudgets(promptEvents, currentDate, (MONTHLY_INCOME - MANDATORY_COSTS) * (SAVINGS_GOAL / 100));
 
                 const inserts = newBudgets.map(b => ({
                     google_id: userGoogleId,

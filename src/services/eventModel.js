@@ -35,3 +35,14 @@ export class CalendarEvent {
 export function parseRawEvents(items = []) {
     return items.map((item) => new CalendarEvent(item));
 }
+
+/**
+ * Parses an ISO date string as the browser's local time, stripping its original timezone.
+ */
+export function parseLocalTime(dateStr, isAllDay) {
+    if (!dateStr) return new Date();
+    if (isAllDay) {
+        return new Date(dateStr + "T00:00:00");
+    }
+    return new Date(dateStr.replace(/([+-]\d{2}:\d{2}|Z)$/, ''));
+}
