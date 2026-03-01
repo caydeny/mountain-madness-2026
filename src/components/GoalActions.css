@@ -1,0 +1,195 @@
+.goal-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0 0 0.25rem 0;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Buttons ── */
+.ga-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 18px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  white-space: nowrap;
+}
+.ga-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+}
+.ga-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+.ga-btn:not(:disabled):active {
+  transform: translateY(0);
+}
+
+.ga-btn-primary {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.28);
+}
+.ga-btn-primary:not(:disabled):hover {
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.38);
+}
+
+.ga-btn-danger {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.25);
+}
+.ga-btn-danger:not(:disabled):hover {
+  box-shadow: 0 5px 14px rgba(220, 38, 38, 0.35);
+}
+
+.ga-btn-success {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(5, 150, 105, 0.25);
+}
+.ga-btn-success:not(:disabled):hover {
+  box-shadow: 0 5px 14px rgba(5, 150, 105, 0.35);
+}
+
+.ga-btn-ghost {
+  background: #f3f4f6;
+  color: #374151;
+  box-shadow: none;
+}
+.ga-btn-ghost:not(:disabled):hover {
+  background: #e5e7eb;
+  box-shadow: none;
+}
+
+/* ── Status pills ── */
+.ga-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.ga-pill-completed {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.ga-pill-failed {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* ── Modal overlay ── */
+.ga-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: ga-fade-in 0.18s ease;
+}
+
+@keyframes ga-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.ga-modal {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  margin: 1rem;
+  animation: ga-slide-up 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes ga-slide-up {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ga-modal-title {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 0.35rem 0;
+}
+
+.ga-modal-subtitle {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+/* ── Form ── */
+.ga-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.ga-label {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.ga-input {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9px;
+  padding: 9px 13px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.9rem;
+  color: #111827;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+.ga-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+.ga-input.ga-input-error {
+  border-color: #ef4444;
+}
+
+.ga-error-text {
+  font-size: 0.75rem;
+  color: #ef4444;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ── Modal footer ── */
+.ga-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
