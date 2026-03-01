@@ -1,58 +1,63 @@
-#root {
-    width: 100%;
-    height: 100vh;
-    margin: 0 auto;
-}
-
-.page-wrapper {
+.app-container {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    width: 100%;
-    min-height: 100vh;
-    background-color: #ffffff;
-    color: #000000;
+    background-color: #f3f4f6;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-.page-title {
-    text-align: center;
-    font-size: 2.5rem;
-    font-weight: 800;
-    margin: 2rem 0 0.5rem 0;
-    background: linear-gradient(135deg, #a855f7, #6366f1);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -0.5px;
-}
-
-.app-container {
-    display: flex;
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
     width: 100%;
-    flex: 1;
 }
 
-.left-panel {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 0.5rem;
-    /* Offsets the rank-board padding of 2.5rem to match right-panel's 3rem */
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
+.page-header {
+    margin-bottom: 2rem;
+    text-align: center;
 }
 
-.right-panel {
-    flex: 1;
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #111827;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.page-header p {
+    color: #6b7280;
+    font-size: 1.125rem;
+}
+
+/* Loading State */
+.loading-state {
     display: flex;
     flex-direction: column;
-    padding: 3rem;
-    overflow-y: auto;
     align-items: center;
+    justify-content: center;
+    height: 50vh;
 }
 
-/* Override RankDisplay container since it's now in a flex panel */
-.rank-container {
-    min-height: auto;
-    background-color: transparent;
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-state p {
+    color: #6b7280;
+    font-weight: 500;
 }
