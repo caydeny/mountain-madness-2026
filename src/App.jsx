@@ -35,9 +35,7 @@ function App() {
         setUserName(firstName)
         setUserEmail(email)
 
-        // 2. Sync with Supabase profiles table
-        // We use email as the link since we aren't using Supabase Auth directly yet
-        // In a real app, you'd use Supabase Auth for better security
+        // Sync with Supabase profiles table
         const { data, error } = await supabase
           .from('profiles')
           .select('*')

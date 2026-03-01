@@ -30,14 +30,22 @@ export default function GlobalLeaderboard({ userElo, userName = 'Me' }) {
     }, []);
 
     const leaderboardData = useMemo(() => {
-        // Since we are fetching everything, we just use the data
-        // But we mark which one is "Me" based on the name/email if we had it
-        return globalUsers.map(user => ({
-            ...user,
-            id: user.email,
-            isCurrentUser: user.name === userName // Simple check for now
-        }));
-    }, [globalUsers, userName]);
+        // Create a copy of the list and ensure current user is accounted for with local state
+        let updatedList = [...globalUsers];
+
+        // Find if current user is already in the list (fetched from DB)
+        const userIndex = updatedList.findIndex(u => u.name === userName);
+
+        if (userIndex !== -1) {
+            // Update their Elo to the local real-time state
+            updatedList[userIndex] = { ...updatedList[userIndex], elo: userElo, isCurrentUser: true };
+        } else {
+            // Add them manually if not in the top 50 yet
+            updatedList.push({ name: userName, elo: userElo, isCurrentUser: true, email: 'local_current' });
+        }
+
+        return updatedList.sort((a, b) => b.elo - a.elo);
+    }, [globalUsers, userName, userElo]);
 
     return (
         <div className="leaderboard-panel global-leaderboard">

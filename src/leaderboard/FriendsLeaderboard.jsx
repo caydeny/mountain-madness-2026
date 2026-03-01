@@ -43,11 +43,20 @@ export default function FriendsLeaderboard({ userElo, userName = 'Me', leaderboa
     }, [leaderboardId]);
 
     const leaderboardData = useMemo(() => {
-        // Since the current user is also in the DB, they might be in 'members'
-        // But for consistency we ensure our local state is reflected
-        return members.map(user => ({
+        // Start with the members fetched from DB or mock
+        let combined = [...members];
+
+        // Ensure current user is in there with latest local Elo
+        const meIndex = combined.findIndex(u => u.name === userName);
+        if (meIndex !== -1) {
+            combined[meIndex] = { ...combined[meIndex], elo: userElo, isCurrentUser: true };
+        } else {
+            combined.push({ name: userName, elo: userElo, isCurrentUser: true, email: 'me_local' });
+        }
+
+        return combined.map(user => ({
             ...user,
-            id: user.email || user.id,
+            id: user.email || user.id || Math.random().toString(),
             isCurrentUser: user.name === userName
         })).sort((a, b) => b.elo - a.elo);
     }, [members, userName, userElo]);

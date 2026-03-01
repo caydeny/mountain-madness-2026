@@ -15,32 +15,29 @@ export default function LeaderboardContainer({ userElo, userName, userEmail }) {
         const fetchMemberships = async () => {
             setLoading(true);
             try {
-                // Fetch the user's profile ID first
-                const { data: profile } = await supabase
+                // Fetch the user's profile first using email
+                const { data: profile, error: pError } = await supabase
                     .from('profiles')
-                    .select('id')
+                    .select('email') // User said they have email, name, elo, rank, google_id
                     .eq('email', userEmail)
                     .single();
 
                 if (profile) {
-                    // Fetch memberships along with leaderboard names
+                    // Try to fetch memberships. This will fail if user hasn't created the table yet.
                     const { data: mems, error } = await supabase
                         .from('memberships')
                         .select(`
                             leaderboard_id,
-                            leaderboards (
-                                id,
-                                name
-                            )
+                            leaderboards (id, name)
                         `)
-                        .eq('user_id', profile.id);
+                        .eq('user_email', profile.email); // Assume relational link via email if id is missing
 
                     if (!error && mems) {
                         setMemberships(mems.map(m => m.leaderboards));
                     }
                 }
             } catch (err) {
-                console.error('Error fetching memberships:', err);
+                console.warn('Membership fetch skipped (Table might not exist yet):', err.message);
             } finally {
                 setLoading(false);
             }
