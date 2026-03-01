@@ -107,7 +107,10 @@ function ConfirmModal({ onClose, title, body, confirmLabel, confirmClass, onConf
 
 /* ─── GoalActions ────────────────────────────────────────── */
 export default function GoalActions({ goal, onGoalChange, userGoogleId, currentAmount: externalCurrent }) {
-  const [modal, setModal] = useState(null); // null | "add" | "giveup" | "finish"
+  const [modal, setModal] = useState(null); // null | "add" | "giveup" | "complete"
+  const [adjustAmount, setAdjustAmount] = useState("");
+  const [adjusting, setAdjusting] = useState(false);
+  const [adjustErr, setAdjustErr] = useState("");
 
   const effectiveCurrent = externalCurrent !== undefined ? externalCurrent : (goal?.value ?? 0);
   const closeModal = useCallback(() => setModal(null), []);
@@ -136,10 +139,6 @@ export default function GoalActions({ goal, onGoalChange, userGoogleId, currentA
   const handleGiveUp = async () => {
     if (!goal || !userGoogleId) return;
 
-    // We update status to false instead of deleting (per typical history tracking)
-    // or just delete if that's what user prefers. "Remove goal" usually implies delete or status=false.
-    // User said: "check if that table has the users google_id and status = false... display buttons to add".
-    // So we update status to false.
     const { error } = await supabase
       .from('goals')
       .update({ status: false })
@@ -168,6 +167,33 @@ export default function GoalActions({ goal, onGoalChange, userGoogleId, currentA
     closeModal();
   };
 
+  /* ── Add / Remove savings ── */
+  const handleAdjust = async (direction) => {
+    const parsed = parseFloat(adjustAmount);
+    if (isNaN(parsed) || parsed <= 0) {
+      setAdjustErr("Enter a valid amount.");
+      return;
+    }
+    setAdjustErr("");
+    setAdjusting(true);
+
+    const delta = direction === "add" ? parsed : -parsed;
+    const newValue = Math.max(0, (goal?.value ?? 0) + delta);
+
+    const { data, error } = await supabase
+      .from('goals')
+      .update({ value: newValue })
+      .eq('id', goal.id)
+      .select()
+      .single();
+
+    if (!error && data) {
+      onGoalChange(data);
+      setAdjustAmount("");
+    }
+    setAdjusting(false);
+  };
+
   const isActive = goal?.status === true;
   const isCompleted = goal && effectiveCurrent >= goal.total_cost;
 
@@ -184,6 +210,39 @@ export default function GoalActions({ goal, onGoalChange, userGoogleId, currentA
         {/* ── Active goal ── */}
         {isActive && (
           <>
+            {/* Amount adjuster */}
+            <div className="ga-adjuster">
+              <button
+                className="ga-adjuster-btn ga-adjuster-remove"
+                onClick={() => handleAdjust("remove")}
+                disabled={adjusting}
+                title="Remove from savings"
+              >
+                −
+              </button>
+              <div className="ga-adjuster-input-wrap">
+                <span className="ga-adjuster-dollar">$</span>
+                <input
+                  className={`ga-adjuster-input${adjustErr ? " ga-input-error" : ""}`}
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={adjustAmount}
+                  onChange={(e) => { setAdjustAmount(e.target.value); setAdjustErr(""); }}
+                />
+              </div>
+              <button
+                className="ga-adjuster-btn ga-adjuster-add"
+                onClick={() => handleAdjust("add")}
+                disabled={adjusting}
+                title="Add to savings"
+              >
+                +
+              </button>
+              {adjustErr && <span className="ga-adjuster-error">{adjustErr}</span>}
+            </div>
+
             <button className="ga-btn ga-btn-danger" onClick={() => setModal("giveup")}>
               Give Up Goal
             </button>

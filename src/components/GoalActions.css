@@ -95,6 +95,121 @@
   border: 1px solid #fecaca;
 }
 
+/* ── Savings adjuster ── */
+.ga-adjuster {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ga-adjuster:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.ga-adjuster-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+  line-height: 1;
+  padding: 0;
+}
+
+.ga-adjuster-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ga-adjuster-remove {
+  color: #ef4444;
+}
+.ga-adjuster-remove:not(:disabled):hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+.ga-adjuster-remove:not(:disabled):active {
+  background: #fecaca;
+}
+
+.ga-adjuster-add {
+  color: #10b981;
+}
+.ga-adjuster-add:not(:disabled):hover {
+  background: #d1fae5;
+  color: #059669;
+}
+.ga-adjuster-add:not(:disabled):active {
+  background: #a7f3d0;
+}
+
+.ga-adjuster-input-wrap {
+  display: flex;
+  align-items: center;
+  border-left: 1.5px solid #e5e7eb;
+  border-right: 1.5px solid #e5e7eb;
+  padding: 0 8px 0 10px;
+  background: #fff;
+  height: 38px;
+}
+
+.ga-adjuster-dollar {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #9ca3af;
+  margin-right: 3px;
+  user-select: none;
+}
+
+.ga-adjuster-input {
+  border: none;
+  outline: none;
+  width: 72px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+  background: transparent;
+  padding: 0;
+  /* hide number spinners */
+  -moz-appearance: textfield;
+}
+.ga-adjuster-input::-webkit-outer-spin-button,
+.ga-adjuster-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.ga-adjuster-input::placeholder {
+  color: #d1d5db;
+  font-weight: 400;
+}
+.ga-adjuster-input.ga-input-error {
+  color: #ef4444;
+}
+
+.ga-adjuster-error {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.72rem;
+  color: #ef4444;
+  font-weight: 600;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
 /* ── Modal overlay ── */
 .ga-overlay {
   position: fixed;
