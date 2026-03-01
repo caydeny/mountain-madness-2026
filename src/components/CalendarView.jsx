@@ -85,8 +85,8 @@ export default function CalendarView({ events, getDayTotal = defaultGetDayTotal 
         )
 
         return {
-            week:  { header: DayTotalHeader, event: EventComponent },
-            day:   { header: DayTotalHeader, event: EventComponent },
+            week: { header: DayTotalHeader, event: EventComponent },
+            day: { header: DayTotalHeader, event: EventComponent },
             month: { event: EventComponent },
         }
     }, [getDayTotal])
@@ -106,6 +106,7 @@ export default function CalendarView({ events, getDayTotal = defaultGetDayTotal 
                     date={date}
                     onNavigate={setDate}
                     components={components}
+
                 />
             </div>
         </>

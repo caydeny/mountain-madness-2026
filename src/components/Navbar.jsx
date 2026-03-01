@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom'
 import './Navbar.css'
 import logo from '../assets/logo.png'
 
-export default function Navbar({ onLoginSuccess, isLoggedIn }) {
+export default function Navbar({ onLoginSuccess, isLoggedIn, userName }) {
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => onLoginSuccess(codeResponse.access_token),
     onError: (error) => console.error('Login Failed:', error),
-    scope: 'https://www.googleapis.com/auth/calendar.readonly',
+    scope: 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/userinfo.profile',
   })
 
   return (
@@ -32,7 +32,12 @@ export default function Navbar({ onLoginSuccess, isLoggedIn }) {
 
       <div className="navbar-right">
         {isLoggedIn ? (
-          <span className="connected-status">✓ Calendar Connected</span>
+          <div className="user-status-group">
+            {userName && userName !== 'Me' && (
+              <span className="user-greeting">Hi, {userName}</span>
+            )}
+            <span className="connected-status">✓ Calendar Connected</span>
+          </div>
         ) : (
           <button className="connect-btn" onClick={() => login()}>
             Connect Calendar
