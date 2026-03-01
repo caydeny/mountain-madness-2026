@@ -52,6 +52,24 @@
     font-size: 0.85rem;
 }
 
+<<<<<<< HEAD
+=======
+.rbc-toolbar {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rbc-toolbar .rbc-toolbar-label {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111827;
+    text-transform: capitalize;
+    letter-spacing: -0.02em;
+}
+
+>>>>>>> origin/main
 .rbc-toolbar button {
     color: #4b5563;
     border: 1px solid #e5e7eb;
