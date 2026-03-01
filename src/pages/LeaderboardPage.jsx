@@ -49,7 +49,7 @@ export default function LeaderboardPage({ userName, userEmail, userElo, setUserE
                         <div className="info-modal-body">
                             <div className="info-ranks-list">
                                 {[...RANKS].reverse().map(r => (
-                                    <div key={r} className={`info-rank-item rank-${r.toLowerCase()}`}>
+                                    <div key={r} className={`info-rank-item rank-${r.split(' ')[0].toLowerCase()}`}>
                                         {r}
                                     </div>
                                 ))}

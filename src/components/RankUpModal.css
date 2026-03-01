@@ -117,17 +117,17 @@
     text-shadow: 0 0 15px rgba(155, 89, 182, 0.4);
 }
 
-.rank-up-overlay .rank-badge.rank-master {
+.rank-up-overlay .rank-badge.rank-ruby {
     color: #E74C3C;
     text-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
 }
 
-.rank-up-overlay .rank-badge.rank-grandmaster {
+.rank-up-overlay .rank-badge.rank-sapphire {
     color: #E67E22;
     text-shadow: 0 0 15px rgba(230, 126, 34, 0.4);
 }
 
-.rank-up-overlay .rank-badge.rank-challenger {
+.rank-up-overlay .rank-badge.rank-crystal {
     background: linear-gradient(to right, #f1c40f, #e74c3c);
     -webkit-background-clip: text;
     background-clip: text;

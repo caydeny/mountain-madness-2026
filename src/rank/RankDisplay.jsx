@@ -24,7 +24,7 @@ export default function RankDisplay({ elo, setElo }) {
         </div>
         <div className="stat-row">
           <span className="stat-label">Rank:</span>
-          <span className={`stat-value rank-${currentRank.toLowerCase()}`}>{currentRank}</span>
+          <span className={`stat-value rank-${currentRank.split(' ')[0].toLowerCase()}`}>{currentRank}</span>
         </div>
 
         <div className="button-group">

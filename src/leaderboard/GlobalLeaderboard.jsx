@@ -62,7 +62,7 @@ export default function GlobalLeaderboard({ userElo, userName = 'Me' }) {
                             <span className="item-rank-num">#{index + 1}</span>
                             <span className="item-name" title={user.name}>{user.name}</span>
                             <span className="item-elo">{user.elo}</span>
-                            <span className={`item-rank rank-${rankName.toLowerCase()}`}>
+                            <span className={`item-rank rank-${rankName.split(' ')[0].toLowerCase()}`}>
                                 {rankName}
                             </span>
                         </div>
