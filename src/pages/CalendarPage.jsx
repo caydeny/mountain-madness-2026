@@ -352,6 +352,22 @@ export default function CalendarPage({
         let newStreak = currentStreak;
         let eloChange = 0;
 
+        if (spent <= totalForDay && userGoal?.id) {
+            const leftover = totalForDay - spent;
+            const newValue = (userGoal.value ?? 0) + leftover;
+
+            const { data, error } = await supabase
+                .from('goals')
+                .update({ value: newValue })
+                .eq('id', userGoal.id)
+                .select()
+                .single();
+
+            if (!error && data) {
+                setUserGoal(data); // triggers GoalProgressBar re-render
+            }
+        }
+
         if (spent <= totalForDay) {
             newStreak += 1;
             setStreakMap(prev => ({
