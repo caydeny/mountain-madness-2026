@@ -141,7 +141,7 @@ export default function GoalActions({ goal, onGoalChange, userGoogleId, currentA
 
     const { error } = await supabase
       .from('goals')
-      .update({ status: false })
+      .delete()
       .eq('id', goal.id);
 
     if (!error) {
@@ -155,10 +155,7 @@ export default function GoalActions({ goal, onGoalChange, userGoogleId, currentA
 
     const { error } = await supabase
       .from('goals')
-      .update({
-        status: false,
-        value: goal.total_cost
-      })
+      .delete()
       .eq('id', goal.id);
 
     if (!error) {
