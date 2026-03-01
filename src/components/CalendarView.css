@@ -34,7 +34,7 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    z-index: 5;
+    z-index: 2;
 }
 
 .rbc-row.rbc-row-resource {
@@ -46,6 +46,7 @@
 }
 
 .rbc-event {
+    overflow: visible !important;
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     border: none;
     border-radius: 6px;
@@ -63,6 +64,10 @@
 .rbc-event-content {
     font-weight: 500;
     font-size: 0.85rem;
+}
+
+.rbc-events-container {
+    overflow: visible !important;
 }
 
 .rbc-toolbar {
@@ -119,6 +124,10 @@
     border-left: 1px solid #e5e7eb;
 }
 
+.rbc-day-slot .rbc-events-container .rbc-time-content{
+    overflow: visible !important;
+}
+
 .rbc-month-row+.rbc-month-row {
     border-top: 1px solid #e5e7eb;
 }
@@ -150,13 +159,39 @@
 
 .rbc-time-header-content {
     overflow: visible !important;
+    background: white;
+}
+
+.rbc-allday-cell {
+    position: relative;
+    z-index: 0;
+    overflow: visible !important;
+    min-height: 30px;
+}
+
+.rbc-allday-cell {
+    overflow: visible !important;
+}
+
+.rbc-time-header-content .rbc-allday-cell {
+    overflow: visible !important;
+}
+
+.rbc-month-view .rbc-row-content .rbc-row:first-child {
+    padding-top: 0;
 }
 
 .rbc-time-header-cell {
+    position: relative;
+    z-index: 1;
     overflow: visible !important;
 }
 
 .rbc-time-header {
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
     overflow: visible !important;
 }
 
@@ -241,18 +276,25 @@
     backdrop-filter: blur(2px);
 }
 
-.rbc-events-container {
-    overflow: visible !important;
-}
-
 .rbc-time-view .rbc-timeslot-group {
     min-height: 90px;
 }
 
+.rbc-time-view .rbc-allday-cell {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.rbc-time-view .rbc-row {
+    overflow: visible !important;
+}
+
 .streak-badge {
     position: absolute;
-    bottom: 6px;
-    left: 6px;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
     display: inline-flex;
     align-items: center;
     gap: 3px;
@@ -273,8 +315,9 @@
 
 .failed-streak-badge {
     position: absolute;
-    bottom: 6px;
-    left: 6px;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
     display: inline-flex;
     align-items: center;
     gap: 3px;
@@ -311,7 +354,7 @@
     max-width: 300px;
     text-align: center;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    z-index: 100;
+    z-index: 9999;
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
