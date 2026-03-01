@@ -8,6 +8,9 @@ import enUS from 'date-fns/locale/en-US'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarView.css'
 
+import { useState } from "react";
+import { askLLM } from "../services/LLM";
+
 const locales = {
     'en-US': enUS,
 }
@@ -21,7 +24,27 @@ const localizer = dateFnsLocalizer({
 })
 
 export default function CalendarView({ events }) {
+    const [prompt, setPrompt] = useState("");
+    const [out, setOut] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [err, setErr] = useState("");
+
+    const run = async () => {
+        setLoading(true);
+        setErr("");
+        setOut("");
+        try {
+            const result = await askLLM(prompt);
+            setOut(result);
+        } catch (e) {
+            setErr(e.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
+        <>
         <div className="calendar-container">
             <Calendar
                 localizer={localizer}
@@ -32,5 +55,6 @@ export default function CalendarView({ events }) {
                 className="premium-calendar"
             />
         </div>
+        </>
     )
 }
