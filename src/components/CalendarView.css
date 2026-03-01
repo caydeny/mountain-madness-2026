@@ -59,11 +59,31 @@
 .rbc-event:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    z-index: 9999 !important;
 }
 
 .rbc-event-content {
     font-weight: 500;
     font-size: 0.85rem;
+    overflow: visible !important;
+}
+
+.rbc-day-slot .rbc-event {
+    overflow: visible !important;
+}
+
+.rbc-allday-events {
+    overflow: visible !important;
+}
+
+/* Ensure containers that have hidden overflow normally 
+   bounce to the front during hover */
+.rbc-month-row:hover,
+.rbc-row:hover,
+.rbc-allday-cell:hover,
+.rbc-time-header-content:hover,
+.rbc-time-slot:hover {
+    z-index: 9999 !important;
 }
 
 .rbc-events-container {
@@ -124,7 +144,7 @@
     border-left: 1px solid #e5e7eb;
 }
 
-.rbc-day-slot .rbc-events-container .rbc-time-content{
+.rbc-day-slot .rbc-events-container .rbc-time-content {
     overflow: visible !important;
 }
 

@@ -147,18 +147,20 @@ export default function CalendarPage({
             // Find events that are NOT in budgetMap
             const unpredictedEvents = events.filter(e => e._raw && budgetMap[e.id] === undefined);
 
-            if (unpredictedEvents.length === 0) {
-                console.log('All events already have predicted budgets.');
-                setPredicting(false);
-                return;
-            }
-
             const now = new Date();
             const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
             const thisMonthEvents = unpredictedEvents.filter((e) => {
                 const start = new Date(e.start);
                 return start >= now && start <= endOfMonth;
             });
+
+            if (thisMonthEvents.length === 0) {
+                console.log('All events for this month already have predicted budgets.');
+                alert('All events for this month already have predicted budgets.');
+                setPredicting(false);
+                return;
+            }
+
             const promptEvents = thisMonthEvents.map((e) => e._raw.toPromptJSON());
 
             console.log('Sending events to Gemini for budget prediction…');
@@ -271,8 +273,13 @@ export default function CalendarPage({
 
             // 2. Detect New Future Events: items in live Calendar NOT in budgetMap
             const now = new Date();
+            const endOfMonthDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
             const newEvents = allFetchedLiveEvents.filter(
-                (e) => e._raw && e.start >= now && budgetMap[e.id] === undefined
+                (e) => {
+                    if (!e._raw || budgetMap[e.id] !== undefined) return false;
+                    const start = new Date(e.start);
+                    return start >= now && start <= endOfMonthDate;
+                }
             );
 
             if (newEvents.length > 0) {
@@ -280,7 +287,7 @@ export default function CalendarPage({
                 const promptEvents = newEvents.map((e) => e._raw.toPromptJSON());
 
                 // Keep UI predictable by reusing logic in Predict
-                const newBudgets = await predictBudgets(promptEvents, currentDate, MONTHLY_INCOME, SAVINGS_GOAL);
+                const newBudgets = await predictBudgets(promptEvents, currentDate, (MONTHLY_INCOME - MANDATORY_COSTS) * (SAVINGS_GOAL / 100));
 
                 const inserts = newBudgets.map(b => ({
                     google_id: userGoogleId,
