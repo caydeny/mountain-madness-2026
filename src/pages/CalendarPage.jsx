@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import CalendarView from '../components/CalendarView'
 
-export default function CalendarPage({ accessToken, setAccessToken, events, setEvents, loading, setLoading }) {
+export default function CalendarPage({ accessToken, setAccessToken, events, setEvents, loading, setLoading, userName }) {
     useEffect(() => {
         if (!accessToken) return
 
@@ -44,7 +44,7 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
     return (
         <main className="main-content">
             <header className="page-header">
-                <h1>Your Calendar</h1>
+                <h1>{userName && userName !== 'Me' ? `${userName}'s Calendar` : 'Your Calendar'}</h1>
                 <p>View your schedule clearly and efficiently.</p>
             </header>
 

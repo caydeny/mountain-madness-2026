@@ -54,6 +54,7 @@ function App() {
                 setEvents={setEvents}
                 loading={loading}
                 setLoading={setLoading}
+                userName={userName}
               />
             }
           />
