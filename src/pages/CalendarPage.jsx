@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import CalendarView from '../components/CalendarView'
-import { parseRawEvents } from '../services/eventModel'
+import { parseRawEvents, parseLocalTime } from '../services/eventModel'
 import { predictBudgets } from '../services/budgetService'
 import { supabase } from '../utils/supabase'
 import { format, addDays, endOfMonth } from 'date-fns'
@@ -110,8 +110,8 @@ export default function CalendarPage({
                             const formatted = calendarEvents.map((ce) => ({
                                 id: ce.id,
                                 title: ce.title,
-                                start: new Date(ce.startTime),
-                                end: new Date(ce.endTime),
+                                start: parseLocalTime(ce.startTime, ce.isAllDay),
+                                end: parseLocalTime(ce.endTime, ce.isAllDay),
                                 allDay: ce.isAllDay,
                                 price: 0,
                                 reasoning: "",
@@ -231,8 +231,8 @@ export default function CalendarPage({
                         const formatted = calendarEvents.map((ce) => ({
                             id: ce.id,
                             title: ce.title,
-                            start: new Date(ce.startTime),
-                            end: new Date(ce.endTime),
+                            start: parseLocalTime(ce.startTime, ce.isAllDay),
+                            end: parseLocalTime(ce.endTime, ce.isAllDay),
                             allDay: ce.isAllDay,
                             price: 0,
                             reasoning: "",
