@@ -8,7 +8,6 @@ import enUS from 'date-fns/locale/en-US'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarView.css'
 
-import { useState } from "react";
 import { askLLM } from "../services/LLM";
 
 const locales = {
