@@ -187,6 +187,8 @@ function App() {
                 userGoal={userGoal}
                 setUserGoal={setUserGoal}
                 userGoogleId={userGoogleId}
+                userElo={userElo}
+                setUserElo={updateElo}
               />
             }
           />
