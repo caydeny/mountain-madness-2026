@@ -8,6 +8,9 @@ import enUS from 'date-fns/locale/en-US'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarView.css'
 
+import getDaysInMonth from 'date-fns/getDaysInMonth'
+import isSameMonth from 'date-fns/isSameMonth'
+
 import { askLLM } from "../services/LLM";
 import GoalProgressBar from "./GoalProgressBar";
 import GoalActions from "./GoalActions";
@@ -31,7 +34,10 @@ export default function CalendarView({
     userGoal,
     setUserGoal,
     userGoogleId,
-    streakMap = {}
+    streakMap = {},
+    monthlyIncome,
+    monthlyMandatorySpending,
+    monthlySavingGoal,
 }) {
     const [prompt, setPrompt] = useState("");
     const [out, setOut] = useState("");
@@ -61,22 +67,34 @@ export default function CalendarView({
             const dayName = format(headerDate, 'EEE')
             const targetFormat = format(headerDate, 'yyyy-MM-dd')
 
-            const total = events.reduce((sum, e) => {
+            const todayCost = events.reduce((sum, e) => {
                 if (e.start && format(e.start, 'yyyy-MM-dd') === targetFormat) {
-                    return sum + (Number(e.price) || 0)
+                return sum + (Number(e.price) || 0)
                 }
                 return sum
             }, 0)
 
+            const monthCost = events.reduce((sum, e) => {
+                if (e.start && isSameMonth(e.start, headerDate)) {
+                return sum + (Number(e.price) || 0)
+                }
+                return sum
+            }, 0)
+
+            const daysInMonth = getDaysInMonth(headerDate)
+
+            const daily = ((monthlyIncome - monthlyMandatorySpending - monthlySavingGoal - monthCost) / daysInMonth) + todayCost
+
             return (
                 <div className="rbc-week-header">
-                    <div className="rbc-week-header-date">
-                        <span className="rbc-week-header-daynum">{dayNum}</span>
-                        <span className="rbc-week-header-dayname">{dayName}</span>
-                    </div>
-                    <div className="rbc-week-header-total">
-                        Total: ${total.toLocaleString()}
-                    </div>
+                <div className="rbc-week-header-date">
+                    <span className="rbc-week-header-daynum">{dayNum}</span>
+                    <span className="rbc-week-header-dayname">{dayName}</span>
+                </div>
+
+                <div className="rbc-week-header-total">
+                    Total: ${Number.isFinite(daily) ? daily.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '0'}
+                </div>
                 </div>
             )
         }
