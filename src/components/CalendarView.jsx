@@ -35,16 +35,10 @@ const STREAK_MAP = STREAK_DATES.reduce((acc, date, index) => {
     return acc
 }, {})
 
-const DEFAULT_DAY_TOTALS = {}
 
-function defaultGetDayTotal(date) {
-    const key = format(date, 'yyyy-MM-dd')
-    return DEFAULT_DAY_TOTALS[key] ?? 0
-}
 
 export default function CalendarView({
     events,
-    getDayTotal = defaultGetDayTotal,
     isLoggedIn = false,
     userGoal,
     setUserGoal,
@@ -76,7 +70,15 @@ export default function CalendarView({
         const DayTotalHeader = ({ date: headerDate }) => {
             const dayNum = format(headerDate, 'd')
             const dayName = format(headerDate, 'EEE')
-            const total = getDayTotal(headerDate)
+            const targetFormat = format(headerDate, 'yyyy-MM-dd')
+
+            const total = events.reduce((sum, e) => {
+                if (e.start && format(e.start, 'yyyy-MM-dd') === targetFormat) {
+                    return sum + (Number(e.price) || 0)
+                }
+                return sum
+            }, 0)
+
             return (
                 <div className="rbc-week-header">
                     <div className="rbc-week-header-date">
@@ -119,7 +121,7 @@ export default function CalendarView({
             day: { header: DayTotalHeader, event: EventComponent },
             month: { event: EventComponent, dateCellWrapper: DateCellWrapper },
         }
-    }, [getDayTotal, isLoggedIn])
+    }, [events, isLoggedIn])
 
     return (
         <>
