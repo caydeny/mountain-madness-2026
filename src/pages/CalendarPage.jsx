@@ -327,7 +327,22 @@ export default function CalendarPage({
         reasoning: budgetMap[e.id]?.reasoning ?? e.reasoning ?? "",
     }));
 
+    // HELPER
+    const getDailyBudget = (date) => {
+        const totalSpendable = MONTHLY_INCOME - MANDATORY_COSTS - ((MONTHLY_INCOME - MANDATORY_COSTS) * (SAVINGS_GOAL / 100));
+        const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        const dailyBudget = totalSpendable / daysInMonth;
 
+        const targetFormat = format(date, 'yyyy-MM-dd');
+        const todaySpent = enrichedEvents.reduce((sum, e) => {
+            if (e.start && format(e.start, 'yyyy-MM-dd') === targetFormat) {
+                return sum + (Number(e.price) || 0);
+            }
+            return sum;
+        }, 0);
+
+        return dailyBudget - todaySpent; // This is exactly what the Total: badge shows
+    };
 
     // 4️⃣ Handle Next Day simulation
     const handleNextDay = async () => {
@@ -338,19 +353,29 @@ export default function CalendarPage({
 
         const targetFormat = format(currentDate, 'yyyy-MM-dd');
 
-        // Calculate total predicted spending for the current day
-        const totalForDay = enrichedEvents.reduce((sum, e) => {
-            if (e.start && format(e.start, 'yyyy-MM-dd') === targetFormat) {
-                return sum + (Number(e.price) || 0);
-            }
-            return sum;
-        }, 0);
+        const totalForDay = getDailyBudget(currentDate);    
 
         const spent = FAKE_SPENDING[currentIndex];
 
         // Evaluate streak
         let newStreak = currentStreak;
         let eloChange = 0;
+
+        if (spent <= totalForDay && userGoal?.id) {
+            const leftover = totalForDay - spent;
+            const newValue = (userGoal.value ?? 0) + leftover;
+
+            const { data, error } = await supabase
+                .from('goals')
+                .update({ value: newValue })
+                .eq('id', userGoal.id)
+                .select()
+                .single();
+
+            if (!error && data) {
+                setUserGoal(data); // triggers GoalProgressBar re-render
+            }
+        }
 
         if (spent <= totalForDay) {
             newStreak += 1;
