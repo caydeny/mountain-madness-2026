@@ -20,7 +20,7 @@
     pointer-events: auto;
 }
 
-.rank-up-modal {
+.rank-up-overlay .rank-up-modal {
     position: relative;
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     border: 2px solid rgba(254, 223, 1, 0.3);
@@ -38,19 +38,19 @@
     transform: scale(1) translateY(0);
 }
 
-.modal-content {
+.rank-up-overlay .modal-content {
     position: relative;
     z-index: 2;
 }
 
-.trophy-icon {
+.rank-up-overlay .trophy-icon {
     font-size: 5rem;
     margin-bottom: 1rem;
     filter: drop-shadow(0 0 15px rgba(254, 223, 1, 0.5));
     animation: float 3s ease-in-out infinite;
 }
 
-.congrats-text {
+.rank-up-overlay .congrats-text {
     font-family: 'Inter', sans-serif;
     font-weight: 900;
     font-size: 2.5rem;
@@ -62,19 +62,19 @@
     letter-spacing: -1px;
 }
 
-.sub-text {
+.rank-up-overlay .sub-text {
     color: #94a3b8;
     font-size: 1.1rem;
     margin-bottom: 2rem;
 }
 
-.rank-badge-container {
+.rank-up-overlay .rank-badge-container {
     margin: 2rem 0;
     display: flex;
     justify-content: center;
 }
 
-.rank-badge {
+.rank-up-overlay .rank-badge {
     padding: 1rem 2.5rem;
     border-radius: 50px;
     font-weight: 800;
@@ -84,17 +84,17 @@
     letter-spacing: 2px;
 }
 
-.rank-announcement {
+.rank-up-overlay .rank-announcement {
     color: white;
     font-weight: 700;
     margin-top: 1.5rem;
 }
 
-.rank-highlight {
+.rank-up-overlay .rank-highlight {
     color: #fedf01;
 }
 
-.claim-reward-btn {
+.rank-up-overlay .claim-reward-btn {
     margin-top: 3rem;
     padding: 1rem 2rem;
     background: #fedf01;
@@ -108,59 +108,59 @@
     box-shadow: 0 4px 15px rgba(254, 223, 1, 0.3);
 }
 
-.claim-reward-btn:hover {
+.rank-up-overlay .claim-reward-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(254, 223, 1, 0.5);
     background: #ffffff;
 }
 
-/* Rank Colors */
-.rank-iron {
+/* Rank Colors (Scoped to Modal) */
+.rank-up-modal .rank-iron {
     background: #64748b;
     color: white;
 }
 
-.rank-bronze {
+.rank-up-modal .rank-bronze {
     background: #92400e;
     color: white;
 }
 
-.rank-silver {
+.rank-up-modal .rank-silver {
     background: #94a3b8;
     color: #1e293b;
 }
 
-.rank-gold {
+.rank-up-modal .rank-gold {
     background: #eab308;
     color: #1e293b;
 }
 
-.rank-platinum {
+.rank-up-modal .rank-platinum {
     background: #0ea5e9;
     color: white;
 }
 
-.rank-emerald {
+.rank-up-modal .rank-emerald {
     background: #10b981;
     color: white;
 }
 
-.rank-diamond {
+.rank-up-modal .rank-diamond {
     background: #6366f1;
     color: white;
 }
 
-.rank-master {
+.rank-up-modal .rank-master {
     background: #a855f7;
     color: white;
 }
 
-.rank-grandmaster {
+.rank-up-modal .rank-grandmaster {
     background: #ef4444;
     color: white;
 }
 
-.rank-challenger {
+.rank-up-modal .rank-challenger {
     background: linear-gradient(to right, #fedf01, #ffffff);
     color: #0f172a;
 }
