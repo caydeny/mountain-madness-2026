@@ -12,30 +12,29 @@ const MANDATORY_COSTS = 2000; // rent, bills, etc. that are not tied to specific
 const SAVINGS_GOAL = 30;
 const FAKE_SPENDING = [35, 0, 20, 120, 18, 100, 0, 40];
 
-export default function CalendarPage({ accessToken, setAccessToken, events, setEvents, loading, setLoading, userName, userGoal, setUserGoal, userGoogleId, userElo, setUserElo }) {
+export default function CalendarPage({
+    accessToken, setAccessToken, events, setEvents, loading, setLoading,
+    userName, userGoal, setUserGoal, userGoogleId, userElo, setUserElo,
+    currentDate, setCurrentDate, currentIndex, setCurrentIndex, currentStreak, setCurrentStreak, streakMap, setStreakMap
+}) {
     const [budgetMap, setBudgetMap] = useState({});  // { eventId → { price, reasoning } }
     const [predicting, setPredicting] = useState(false);
 
-    // Streak simulation state
-    const [currentDate, setCurrentDate] = useState(new Date('2026-02-28T00:00:00'));
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [currentStreak, setCurrentStreak] = useState(0);
-    const [streakMap, setStreakMap] = useState({}); // { '2026-02-28': 1, ... }
-
-    // Load budgets from Supabase on mount
+    // Load budgets and streaks from Supabase on mount
     useEffect(() => {
         if (!userGoogleId) return;
-        const fetchBudgets = async () => {
+        const fetchData = async () => {
             try {
-                const { data, error } = await supabase
+                // Fetch budgets
+                const { data: budgetData, error: budgetError } = await supabase
                     .from('events')
                     .select('event_id, predicted_budget, reasoning')
                     .eq('google_id', userGoogleId);
 
-                if (error) throw error;
-                if (data) {
+                if (budgetError) throw budgetError;
+                if (budgetData) {
                     const map = {};
-                    data.forEach((b) => {
+                    budgetData.forEach((b) => {
                         map[b.event_id] = {
                             price: b.predicted_budget,
                             reasoning: b.reasoning
@@ -43,11 +42,36 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
                     });
                     setBudgetMap(map);
                 }
+
+                // Fetch streaks
+                const { data: streakData, error: streakError } = await supabase
+                    .from('streaks')
+                    .select('event_date, streak_number')
+                    .eq('google_id', userGoogleId);
+
+                if (streakError) throw streakError;
+                if (streakData && streakData.length > 0) {
+                    const sMap = {};
+                    let maxStreak = 0;
+                    streakData.forEach((s) => {
+                        sMap[s.event_date] = s.streak_number;
+                        // Naive way to resume the current streak based on the highest loaded number,
+                        // assuming streaks are continuous.
+                        if (s.streak_number > maxStreak) {
+                            maxStreak = s.streak_number;
+                        }
+                    });
+                    setStreakMap(sMap);
+                    // For simulation purposes, we might want to manually sync currentStreak, 
+                    // though simulation uses currentIndex and FAKE_SPENDING linearly. 
+                    setCurrentStreak(maxStreak);
+                }
+
             } catch (err) {
-                console.error('Error fetching budgets from Supabase:', err);
+                console.error('Error fetching data from Supabase:', err);
             }
         };
-        fetchBudgets();
+        fetchData();
     }, [userGoogleId]);
 
     // 1️⃣ Fetch events from Google Calendar
@@ -163,7 +187,7 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
 
 
     // 4️⃣ Handle Next Day simulation
-    const handleNextDay = () => {
+    const handleNextDay = async () => {
         if (currentIndex >= FAKE_SPENDING.length) {
             alert("No more fake data left!");
             return;
@@ -192,14 +216,45 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
                 [targetFormat]: newStreak
             }));
 
+            // Sync successfully maintained streak to Supabase
+            if (userGoogleId) {
+                supabase.from('streaks').insert([{
+                    google_id: userGoogleId,
+                    event_date: targetFormat,
+                    streak_number: newStreak
+                }]).then(({ error }) => {
+                    if (error) console.error("Error saving streak to DB:", error);
+                });
+            }
+
             // Calculate positive Elo change
-            if (totalForDay > 0) {
+            if (spent === 0) {
+                if (totalForDay === 0) {
+                    eloChange = 15;
+                } else {
+                    eloChange = 25;
+                }
+            } else if (totalForDay > 0) {
                 eloChange = Math.round(((totalForDay - spent) / totalForDay) * 100);
             }
         } else {
             newStreak = 0;
-            // Intentional: we don't clear the previous map entries, 
-            // just don't add a streak entry for days where they overspend.
+            // Record failure locally
+            setStreakMap(prev => ({
+                ...prev,
+                [targetFormat]: newStreak // 0 represents a broken streak
+            }));
+
+            // Save broken streak to Supabase
+            if (userGoogleId) {
+                supabase.from('streaks').insert([{
+                    google_id: userGoogleId,
+                    event_date: targetFormat,
+                    streak_number: newStreak
+                }]).then(({ error }) => {
+                    if (error) console.error("Error saving failure streak to DB:", error);
+                });
+            }
 
             // Calculate negative Elo change
             if (totalForDay > 0) {

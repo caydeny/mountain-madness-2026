@@ -25,7 +25,7 @@ export default function RankUpModal({ rank, onClose }) {
                     <p className="sub-text">You've reached a new milestone</p>
 
                     <div className="rank-badge-container">
-                        <div className={`rank-badge rank-${rank.toLowerCase()}`}>
+                        <div className={`rank-badge rank-${rank.split(' ')[0].toLowerCase()}`}>
                             {rank}
                         </div>
                     </div>

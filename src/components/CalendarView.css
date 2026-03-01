@@ -271,6 +271,27 @@
     animation: streak-pop 1.8s ease-in-out infinite;
 }
 
+.failed-streak-badge {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #991b1b;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border: 1px solid #ef4444;
+    padding: 2px 7px 2px 5px;
+    border-radius: 999px;
+    white-space: nowrap;
+    line-height: 1.5;
+    pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3);
+}
+
 @keyframes streak-pop {}
 
 .rbc-event-tooltip {
