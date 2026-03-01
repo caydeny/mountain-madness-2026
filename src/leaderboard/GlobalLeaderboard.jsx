@@ -18,7 +18,7 @@ const generateRandomGlobalUsers = () => {
     }));
 };
 
-export default function GlobalLeaderboard({ userElo }) {
+export default function GlobalLeaderboard({ userElo, userName = 'Me' }) {
     const [globalUsers, setGlobalUsers] = useState([]);
 
     useEffect(() => {
@@ -26,15 +26,15 @@ export default function GlobalLeaderboard({ userElo }) {
     }, []);
 
     const leaderboardData = useMemo(() => {
-        // Add "Me" to the list
+        // Add current user to the list
         const combined = [
             ...globalUsers,
-            { id: 'me', name: 'Me', elo: userElo, isCurrentUser: true }
+            { id: 'me', name: userName, elo: userElo, isCurrentUser: true }
         ];
 
         // Sort descending by Elo
         return combined.sort((a, b) => b.elo - a.elo);
-    }, [userElo, globalUsers]);
+    }, [userElo, globalUsers, userName]);
 
     return (
         <div className="leaderboard-panel global-leaderboard">

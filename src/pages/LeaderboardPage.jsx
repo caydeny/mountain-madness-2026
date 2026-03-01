@@ -2,7 +2,7 @@ import { useState } from 'react'
 import RankDisplay from '../rank/RankDisplay'
 import LeaderboardContainer from '../leaderboard/LeaderboardContainer'
 
-export default function LeaderboardPage() {
+export default function LeaderboardPage({ userName }) {
     const [elo, setElo] = useState(0)
 
     return (
@@ -13,7 +13,7 @@ export default function LeaderboardPage() {
                     <RankDisplay elo={elo} setElo={setElo} />
                 </div>
                 <div className="rankings-right-panel">
-                    <LeaderboardContainer userElo={elo} />
+                    <LeaderboardContainer userElo={elo} userName={userName} />
                 </div>
             </div>
         </div>

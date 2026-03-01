@@ -8,7 +8,6 @@ import enUS from 'date-fns/locale/en-US'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CalendarView.css'
 
-import { useState } from "react";
 import { askLLM } from "../services/LLM";
 
 const locales = {
@@ -47,20 +46,20 @@ export default function CalendarView({ events }) {
 
     return (
         <>
-        <div className="calendar-container">
-            <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 'calc(100vh - 120px)' }}
-                className="premium-calendar"
-                view={view}
-                onView={setView}
-                date={date}
-                onNavigate={setDate}
-            />
-        </div>
+            <div className="calendar-container">
+                <Calendar
+                    localizer={localizer}
+                    events={events}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={{ height: 'calc(100vh - 120px)' }}
+                    className="premium-calendar"
+                    view={view}
+                    onView={setView}
+                    date={date}
+                    onNavigate={setDate}
+                />
+            </div>
         </>
     )
 }

@@ -64,6 +64,19 @@
   opacity: 0.9;
 }
 
+.user-status-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-greeting {
+  font-weight: 500;
+  font-size: 15px;
+  color: #FEDF01;
+  /* Using the yellow accent color for the greeting */
+}
+
 .connected-status {
   background-color: #10b981;
   color: white;

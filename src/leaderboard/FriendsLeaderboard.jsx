@@ -9,17 +9,17 @@ const MOCK_FRIENDS = [
     { id: 'f4', name: 'Cayden', elo: 950 },
 ];
 
-export default function FriendsLeaderboard({ userElo }) {
+export default function FriendsLeaderboard({ userElo, userName = 'Me' }) {
     const leaderboardData = useMemo(() => {
-        // Add "Me" to the list
+        // Add current user to the list
         const combined = [
             ...MOCK_FRIENDS,
-            { id: 'me', name: 'Me', elo: userElo, isCurrentUser: true }
+            { id: 'me', name: userName, elo: userElo, isCurrentUser: true }
         ];
 
         // Sort descending by Elo
         return combined.sort((a, b) => b.elo - a.elo);
-    }, [userElo]);
+    }, [userElo, userName]);
 
     return (
         <div className="leaderboard-panel friends-leaderboard">
