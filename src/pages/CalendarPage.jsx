@@ -1,26 +1,39 @@
 import { useState, useEffect, useRef } from 'react'
 import CalendarView from '../components/CalendarView'
 import { parseRawEvents } from '../services/eventModel'
-import { predictBudgets, saveBudgets, loadBudgets } from '../services/budgetService'
+import { predictBudgets } from '../services/budgetService'
+import { supabase } from '../utils/supabase'
 
 // ─── Hardcoded values (swap with user input later) ──────────────────────────
 const MONTHLY_INCOME = 5000;
 const SAVINGS_GOAL = 1500;
 
-export default function CalendarPage({ accessToken, setAccessToken, events, setEvents, loading, setLoading, userName }) {
+export default function CalendarPage({ accessToken, setAccessToken, events, setEvents, loading, setLoading, userName, userGoal, setUserGoal, userGoogleId }) {
     const [budgetMap, setBudgetMap] = useState({});  // { eventId → predictedBudget }
     const [predicting, setPredicting] = useState(false);
 
-    // Load budgets from localStorage on mount
+    // Load budgets from Supabase on mount
     useEffect(() => {
-        const cached = loadBudgets();
-        if (cached) {
-            console.log('Loaded budgets from localStorage:', cached);
-            const map = {};
-            cached.forEach((b) => { map[b.eventId] = b.predictedBudget; });
-            setBudgetMap(map);
-        }
-    }, []);
+        if (!userGoogleId) return;
+        const fetchBudgets = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('events')
+                    .select('event_id, predicted_budget')
+                    .eq('google_id', userGoogleId);
+
+                if (error) throw error;
+                if (data) {
+                    const map = {};
+                    data.forEach((b) => { map[b.event_id] = b.predicted_budget; });
+                    setBudgetMap(map);
+                }
+            } catch (err) {
+                console.error('Error fetching budgets from Supabase:', err);
+            }
+        };
+        fetchBudgets();
+    }, [userGoogleId]);
 
     // 1️⃣ Fetch events from Google Calendar
     useEffect(() => {
@@ -66,24 +79,44 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
 
     // 2️⃣ Manually trigger budget prediction
     const handlePredict = async () => {
-        if (events.length === 0) return;
+        if (events.length === 0 || !userGoogleId) return;
         setPredicting(true);
 
         try {
-            const promptEvents = events
-                .filter((e) => e._raw)
-                .map((e) => e._raw.toPromptJSON());
+            // Find events that are NOT in budgetMap
+            const unpredictedEvents = events.filter(e => e._raw && budgetMap[e.id] === undefined);
+
+            if (unpredictedEvents.length === 0) {
+                console.log('All events already have predicted budgets.');
+                setPredicting(false);
+                return;
+            }
+
+            const promptEvents = unpredictedEvents.map((e) => e._raw.toPromptJSON());
 
             console.log('Sending events to Gemini for budget prediction…');
-            const budgets = await predictBudgets(promptEvents, MONTHLY_INCOME, SAVINGS_GOAL);
-            console.log('Gemini predicted budgets:', budgets);
+            const newBudgets = await predictBudgets(promptEvents, MONTHLY_INCOME, SAVINGS_GOAL);
+            console.log('Gemini predicted budgets:', newBudgets);
 
-            // Save locally
-            saveBudgets(budgets);
+            // Save to Supabase
+            const inserts = newBudgets.map(b => ({
+                google_id: userGoogleId,
+                name: userName,
+                event_id: b.eventId,
+                title: b.title,
+                predicted_budget: b.predictedBudget,
+                reasoning: b.reasoning
+            }));
+
+            const { error: insertError } = await supabase.from('events').insert(inserts);
+            if (insertError) {
+                console.error('Error saving budgets to Supabase:', insertError);
+                throw insertError;
+            }
 
             // Build lookup map
-            const map = {};
-            budgets.forEach((b) => { map[b.eventId] = b.predictedBudget; });
+            const map = { ...budgetMap };
+            newBudgets.forEach((b) => { map[b.eventId] = b.predictedBudget; });
             setBudgetMap(map);
         } catch (err) {
             console.error('Budget prediction failed:', err);
@@ -140,6 +173,9 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
                 <CalendarView
                     events={enrichedEvents}
                     isLoggedIn={!!accessToken}
+                    userGoal={userGoal}
+                    setUserGoal={setUserGoal}
+                    userGoogleId={userGoogleId}
                 />
             )}
         </main>

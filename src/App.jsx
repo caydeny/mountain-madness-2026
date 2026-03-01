@@ -12,6 +12,8 @@ function App() {
   const [userName, setUserName] = useState('Me')
   const [userElo, setUserElo] = useState(0)
   const [userRank, setUserRank] = useState('iron')
+  const [userGoal, setUserGoal] = useState(null)
+  const [userGoogleId, setUserGoogleId] = useState(null)
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -34,6 +36,7 @@ function App() {
 
         setUserName(firstName)
         setUserEmail(email)
+        setUserGoogleId(sub)
 
         // Sync with Supabase profiles table
         const { data, error } = await supabase
@@ -71,6 +74,19 @@ function App() {
           if (data.name !== firstName) {
             await supabase.from('profiles').update({ name: firstName }).eq('email', email)
           }
+        }
+
+        // Fetch active goal from 'goals' table using google_id (sub)
+        const { data: goalData, error: goalError } = await supabase
+          .from('goals')
+          .select('*')
+          .eq('google_id', sub)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single()
+
+        if (!goalError && goalData) {
+          setUserGoal(goalData)
         }
       } catch (error) {
         console.error('Error syncing user info:', error)
@@ -114,6 +130,9 @@ function App() {
                 loading={loading}
                 setLoading={setLoading}
                 userName={userName}
+                userGoal={userGoal}
+                setUserGoal={setUserGoal}
+                userGoogleId={userGoogleId}
               />
             }
           />

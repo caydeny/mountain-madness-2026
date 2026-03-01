@@ -1,4 +1,3 @@
-const STORAGE_KEY = 'rbc_predicted_budgets';
 
 // ─── Prompt template ────────────────────────────────────────────────────────
 function buildPrompt(events, income, savingsGoal) {
@@ -42,20 +41,3 @@ export async function predictBudgets(calendarEvents, income, savingsGoal) {
     return data.budgets; // Array of { eventId, title, predictedBudget, reasoning }
 }
 
-// ─── Local persistence ──────────────────────────────────────────────────────
-export function saveBudgets(budgets) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(budgets));
-}
-
-export function loadBudgets() {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : null;
-    } catch {
-        return null;
-    }
-}
-
-export function clearBudgets() {
-    localStorage.removeItem(STORAGE_KEY);
-}
