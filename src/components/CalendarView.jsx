@@ -101,10 +101,16 @@ export default function CalendarView({
             return (
                 <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
                     {children}
-                    {isLoggedIn && streakCount != null && (
-                        <div className="streak-badge" title={`🔥 ${streakCount} day streak!`}>
-                            🔥 {streakCount}
-                        </div>
+                    {isLoggedIn && streakCount !== undefined && streakCount !== null && (
+                        streakCount === 0 ? (
+                            <div className="failed-streak-badge" title="Failed to stay under budget 😢">
+                                ❌ Failed
+                            </div>
+                        ) : (
+                            <div className="streak-badge" title={`🔥 ${streakCount} day streak!`}>
+                                🔥 {streakCount}
+                            </div>
+                        )
                     )}
                 </div>
             )
