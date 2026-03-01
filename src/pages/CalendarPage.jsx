@@ -10,7 +10,7 @@ const currentDate = new Date().toISOString().split('T')[0]; // e.g. "2026-02-28"
 const MONTHLY_INCOME = 5000;
 const MANDATORY_COSTS = 2000; // rent, bills, etc. that are not tied to specific events
 const SAVINGS_GOAL = 30;
-const FAKE_SPENDING = [35, 0, 20, 120, 18, 100, 0, 40];
+const FAKE_SPENDING = [35, 0, 20, 120, 35, 200, 0, 40, 0, 50, 65, 75, 150, 75, 88, 98, 35, 45, 60, 0, 0, 0, 52, 34, 68, 56, 67, 12, 3, 40, 5];
 
 export default function CalendarPage({
     accessToken, setAccessToken, events, setEvents, loading, setLoading,
