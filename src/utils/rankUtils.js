@@ -1,14 +1,14 @@
 export const RANKS = [
-    "Iron",
-    "Bronze",
-    "Silver",
-    "Gold",
-    "Platinum",
-    "Emerald",
-    "Diamond",
-    "Master",
-    "Grandmaster",
-    "Challenger"
+    "Iron Investor",
+    "Bronze Budgeter",
+    "Silver Saver",
+    "Gold Guardian",
+    "Platinum Planner",
+    "Emerald Earner",
+    "Diamond Depositor",
+    "Ruby Rainmaker",
+    "Sapphire Stasher",
+    "Crystal Cashlord"
 ];
 
 /**

@@ -93,7 +93,10 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
                 return;
             }
 
-            const promptEvents = unpredictedEvents.map((e) => e._raw.toPromptJSON());
+            const now = new Date();
+            const promptEvents = unpredictedEvents
+                .filter((e) => new Date(e.start) >= now) // Only include upcoming events
+                .map((e) => e._raw.toPromptJSON());
 
             console.log('Sending events to Gemini for budget prediction…');
             const newBudgets = await predictBudgets(promptEvents, currentDate, MONTHLY_INCOME, SAVINGS_GOAL);
