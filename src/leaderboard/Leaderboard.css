@@ -108,13 +108,14 @@
 }
 
 .leaderboard-item {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 40px minmax(120px, 1fr) 80px 120px;
     align-items: center;
     padding: 0.75rem 1rem;
     background: rgba(0, 0, 0, 0.03);
     border-radius: 8px;
     transition: transform 0.2s, background 0.2s;
+    gap: 1rem;
 }
 
 .leaderboard-item:hover {
@@ -131,16 +132,10 @@
     background: rgba(99, 102, 241, 0.25);
 }
 
-.item-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
 .item-rank-num {
     font-weight: 700;
     color: #888;
-    width: 24px;
+    grid-column: 1;
 }
 
 .current-user-item .item-rank-num {
@@ -150,18 +145,18 @@
 .item-name {
     font-weight: 600;
     font-size: 1.1rem;
-}
-
-.item-right {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
+    grid-column: 2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .item-elo {
     font-family: monospace;
     font-size: 1.1rem;
     color: #555555;
+    grid-column: 3;
+    text-align: left;
 }
 
 .item-rank {
@@ -169,6 +164,40 @@
     text-transform: uppercase;
     font-size: 0.9rem;
     letter-spacing: 0.5px;
-    min-width: 90px;
+    grid-column: 4;
     text-align: right;
+}
+
+/* Login Prompt */
+.login-prompt-container {
+    display: flex;
+    justify-content: center;
+    padding: 4rem 2rem;
+}
+
+.login-prompt-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 3rem;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 400px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
+}
+
+.prompt-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1.5rem;
+}
+
+.login-prompt-card h2 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.login-prompt-card p {
+    color: #666;
+    line-height: 1.5;
 }
