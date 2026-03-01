@@ -40,6 +40,7 @@
     padding: 4px 8px;
     box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: visible !important;
 }
 
 .rbc-event:hover {
@@ -109,4 +110,102 @@
 
 .rbc-off-range-bg {
     background-color: #f9fafb;
+}
+
+.rbc-time-view .rbc-header {
+    height: auto !important;
+    min-height: 56px;
+    padding: 6px 4px !important;
+    overflow: visible !important;
+}
+
+.rbc-time-header-content {
+    overflow: visible !important;
+}
+
+.rbc-time-header-cell {
+    overflow: visible !important;
+}
+
+.rbc-week-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    padding: 4px 0;
+}
+
+.rbc-week-header-date {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.rbc-week-header-daynum {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #111827;
+}
+
+.rbc-week-header-dayname {
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.rbc-week-header-total {
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
+.rbc-custom-event {
+    position: relative;
+    height: 100%;
+    min-height: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow: visible;
+}
+
+.rbc-custom-event-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    white-space: normal;
+}
+
+.rbc-event-price-badge {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    display: inline-flex;
+    font-weight: 700;
+    font-size: 0.7rem;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 1px 6px;
+    border-radius: 999px;
+    white-space: nowrap;
+    line-height: 1.5;
+    backdrop-filter: blur(2px);
+}
+
+.rbc-events-container {
+    overflow: visible !important;
+}
+
+.rbc-time-view .rbc-timeslot-group {
+    min-height: 90px;
 }
