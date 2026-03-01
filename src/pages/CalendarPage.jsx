@@ -172,6 +172,7 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
             ) : (
                 <CalendarView
                     events={enrichedEvents}
+                    isLoggedIn={!!accessToken}
                     userGoal={userGoal}
                     setUserGoal={setUserGoal}
                     userGoogleId={userGoogleId}

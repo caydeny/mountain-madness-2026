@@ -151,14 +151,14 @@ export default function GoalActions({ goal, onGoalChange, userGoogleId, currentA
     closeModal();
   };
 
-  const handleFinish = async (isSuccess) => {
+  const handleComplete = async () => {
     if (!goal || !userGoogleId) return;
 
     const { error } = await supabase
       .from('goals')
       .update({
         status: false,
-        value: isSuccess ? goal.total_cost : effectiveCurrent
+        value: goal.total_cost
       })
       .eq('id', goal.id);
 
@@ -189,10 +189,12 @@ export default function GoalActions({ goal, onGoalChange, userGoogleId, currentA
             </button>
 
             <button
-              className={`ga-btn ${isCompleted ? "ga-btn-success" : "ga-btn-danger"}`}
-              onClick={() => setModal("finish")}
+              className="ga-btn ga-btn-success"
+              onClick={() => setModal("complete")}
+              disabled={!isCompleted}
+              title={!isCompleted ? "Keep saving to reach your goal!" : "Mark this goal as completed"}
             >
-              {isCompleted ? "✓ Completed Goal" : "✗ Failed Goal"}
+              ✓ Completed Goal
             </button>
           </>
         )}
@@ -214,18 +216,14 @@ export default function GoalActions({ goal, onGoalChange, userGoogleId, currentA
         />
       )}
 
-      {modal === "finish" && goal && (
+      {modal === "complete" && goal && (
         <ConfirmModal
           onClose={closeModal}
-          title={isCompleted ? "Mark as Completed?" : "Mark as Failed?"}
-          body={
-            isCompleted
-              ? "You reached your savings goal. Mark it as completed?"
-              : "You bought the item before reaching the goal. Mark this goal as failed?"
-          }
-          confirmLabel={isCompleted ? "Mark Completed" : "Mark Failed"}
-          confirmClass={isCompleted ? "ga-btn-success" : "ga-btn-danger"}
-          onConfirm={() => handleFinish(isCompleted)}
+          title="Mark as Completed?"
+          body="You reached your savings goal. Mark it as completed?"
+          confirmLabel="Mark Completed"
+          confirmClass="ga-btn-success"
+          onConfirm={handleComplete}
         />
       )}
     </>
