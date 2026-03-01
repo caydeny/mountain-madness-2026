@@ -52,8 +52,6 @@
     font-size: 0.85rem;
 }
 
-<<<<<<< HEAD
-=======
 .rbc-toolbar {
     margin-bottom: 1.5rem;
     display: flex;
@@ -69,7 +67,6 @@
     letter-spacing: -0.02em;
 }
 
->>>>>>> origin/main
 .rbc-toolbar button {
     color: #4b5563;
     border: 1px solid #e5e7eb;

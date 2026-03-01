@@ -33,6 +33,13 @@
 }
 
 /* Loading State */
+.leaderboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 .loading-state {
     display: flex;
     flex-direction: column;
@@ -114,6 +121,4 @@
     min-height: auto !important;
     background-color: transparent !important;
     padding: 0 !important;
-}
-
 }

@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import React from 'react'
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
-=======
 import React, { useState } from 'react'
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar'
->>>>>>> origin/main
 import format from 'date-fns/format'
 import parse from 'date-fns/parse'
 import startOfWeek from 'date-fns/startOfWeek'
@@ -26,12 +21,9 @@ const localizer = dateFnsLocalizer({
 })
 
 export default function CalendarView({ events }) {
-<<<<<<< HEAD
-=======
     const [view, setView] = useState(Views.MONTH)
     const [date, setDate] = useState(new Date())
 
->>>>>>> origin/main
     return (
         <div className="calendar-container">
             <Calendar
@@ -41,13 +33,10 @@ export default function CalendarView({ events }) {
                 endAccessor="end"
                 style={{ height: 'calc(100vh - 120px)' }}
                 className="premium-calendar"
-<<<<<<< HEAD
-=======
                 view={view}
                 onView={setView}
                 date={date}
                 onNavigate={setDate}
->>>>>>> origin/main
             />
         </div>
     )
