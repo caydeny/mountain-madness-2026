@@ -1,5 +1,5 @@
 export const RANKS = [
-    "Iron Investor",
+    "Iron Intern",
     "Bronze Budgeter",
     "Silver Saver",
     "Gold Guardian",
