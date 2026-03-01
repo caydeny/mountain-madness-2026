@@ -98,6 +98,8 @@ export default function CalendarPage({
                 const allFetchedEvents = [];
                 const promises = listData.items.map(async (cal) => {
                     try {
+                        if (cal.id.includes('holiday@group.v.calendar.google.com')) return; // Skip holiday calendars
+
                         const evResp = await fetch(
                             `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cal.id)}/events?orderBy=startTime&singleEvents=true&maxResults=250`,
                             { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -221,6 +223,8 @@ export default function CalendarPage({
             const allFetchedLiveEvents = [];
             const promises = listData.items.map(async (cal) => {
                 try {
+                    if (cal.id.includes('holiday@group.v.calendar.google.com')) return; // Skip holiday calendars
+
                     const evResp = await fetch(
                         `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cal.id)}/events?orderBy=startTime&singleEvents=true&maxResults=250`,
                         { headers: { Authorization: `Bearer ${accessToken}` } }

@@ -168,6 +168,7 @@ export default function CalendarView({
                     endAccessor="end"
                     style={{ height: 'calc(100vh - 120px)' }}
                     className="premium-calendar"
+                    views={['month', 'week', 'day']}
                     view={view}
                     onView={setView}
                     date={date}
