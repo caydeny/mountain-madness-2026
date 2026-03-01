@@ -24,12 +24,16 @@ const localizer = dateFnsLocalizer({
     locales,
 })
 
-const STREAK_DATES = new Set([
+const STREAK_DATES = [
     '2026-02-22',
     '2026-02-23',
     '2026-02-24',
-    
-])
+]
+
+const STREAK_MAP = STREAK_DATES.reduce((acc, date, index) => {
+    acc[date] = index + 1
+    return acc
+}, {})
 
 const DEFAULT_DAY_TOTALS = {}
 
@@ -43,7 +47,8 @@ export default function CalendarView({
     getDayTotal = defaultGetDayTotal,
     goalName = "Monthly Savings Goal",
     currentAmount = 400,
-    targetAmount = 1000
+    targetAmount = 1000,
+    isLoggedIn = false,
 }) {
     const [prompt, setPrompt] = useState("");
     const [out, setOut] = useState("");
@@ -98,13 +103,13 @@ export default function CalendarView({
 
         const DateCellWrapper = ({ children, value }) => {
             const key = format(value, 'yyyy-MM-dd')
-            const isStreak = STREAK_DATES.has(key)
+            const streakCount = STREAK_MAP[key]
             return (
                 <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
                     {children}
-                    {isStreak && (
-                        <div className="streak-flame-badge" title="🔥 Streak day!">
-                            🔥
+                    {isLoggedIn && streakCount != null && (
+                        <div className="streak-badge" title={`🔥 ${streakCount} day streak!`}>
+                            🔥 {streakCount}
                         </div>
                     )}
                 </div>
@@ -116,7 +121,7 @@ export default function CalendarView({
             day: { header: DayTotalHeader, event: EventComponent },
             month: { event: EventComponent, dateCellWrapper: DateCellWrapper },
         }
-    }, [getDayTotal])
+    }, [getDayTotal, isLoggedIn])
 
     return (
         <>

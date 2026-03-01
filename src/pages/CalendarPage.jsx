@@ -137,7 +137,10 @@ export default function CalendarPage({ accessToken, setAccessToken, events, setE
                     <p>Syncing calendar events...</p>
                 </div>
             ) : (
-                <CalendarView events={enrichedEvents} />
+                <CalendarView
+                    events={enrichedEvents}
+                    isLoggedIn={!!accessToken}
+                />
             )}
         </main>
     )
