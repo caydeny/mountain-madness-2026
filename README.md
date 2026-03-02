@@ -10,7 +10,7 @@ An AI-powered budgeting app that minimizes impulse spending and turns saving mon
 - [🏆 Gamification](#-gamification)
 - [🎯 Mission](#-mission)
 - [⚙️ Setup](#-setup)
-- 
+
 ---
 
 ## 🚀 What It Does
