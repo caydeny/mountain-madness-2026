@@ -2,6 +2,15 @@
 
 An AI-powered budgeting app that minimizes impulse spending and turns saving money into a daily game.
 
+## 📌 Table of Contents
+
+- [🚀 What It Does](#-what-it-does)
+- [🤖 How It Works](#-how-it-works)
+- [🎯 Goals](#-goals)
+- [🏆 Gamification](#-gamification)
+- [🎯 Mission](#-mission)
+- [⚙️ Setup](#-setup)
+- 
 ---
 
 ## 🚀 What It Does
