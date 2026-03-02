@@ -73,3 +73,82 @@ Make saving:
 
 RBC doesn’t just track your money.  
 It helps you control it.
+
+---
+
+## ⚙️ Setup
+
+### 1️⃣ Install Dependencies
+
+```bash
+npm install
+```
+
+Install Google OAuth package:
+
+```bash
+npm install @react-oauth/google
+```
+
+---
+
+### 2️⃣ Environment Variables
+
+This project uses **two environment files** in the root folder:
+
+- `.env.local` → root
+- `.env` → root
+
+---
+
+### 🖥 Frontend — `.env.local`
+
+Create a file called `.env.local` in the project root:
+
+```env
+VITE_GOOGLE_CLIENT_ID=
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+```
+
+⚠️ Important:
+- All frontend variables must start with `VITE_`
+- Do NOT commit this file
+
+---
+
+### 🧠 Backend — `.env`
+
+Create a file called `.env` in the project root:
+
+```env
+GEMINI_API_KEY=
+```
+
+Do not commit this file.
+
+---
+
+### 3️⃣ Run the App
+
+```bash
+npm run dev
+```
+
+This starts both:
+
+- Frontend (Vite)
+- Backend API server
+
+---
+
+### 🔐 Security Reminder
+
+Add this to your `.gitignore`:
+
+```
+.node_modules
+dist
+.env
+.env.local
+```
