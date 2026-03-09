@@ -1,4 +1,4 @@
-# 💸 RBC — Relative Budgeting Calendar
+# 💸 RBC — Rational Budgeting Calendar
 
 An AI-powered budgeting app that minimizes impulse spending and turns saving money into a daily game.
 
