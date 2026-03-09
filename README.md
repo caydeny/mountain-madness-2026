@@ -2,6 +2,8 @@
 
 An AI-powered budgeting app that minimizes impulse spending and turns saving money into a daily game.
 
+![DEMO](/public/demo.png)
+
 ## 📌 Table of Contents
 
 - [🚀 What It Does](#-what-it-does)
